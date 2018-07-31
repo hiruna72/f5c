@@ -6,19 +6,15 @@
 // nanopolish_read_db -- database of reads and their
 // associated signal data
 //
-#include <assert.h>
+#include "nanopolish_read_db.h"
+#include "htslib/bgzf.h"
+#include "htslib/kseq.h"
+#include "nanopolish_common.h"
 #include <fstream>
 #include <iostream>
 #include <ostream>
 #include <sys/stat.h>
-#include <vector>
 #include <zlib.h>
-//#include "nanopolish_common.h"
-#include "nanopolish_read_db.h"
-#include <htslib/bgzf.h>
-#include <htslib/faidx.h>
-#include <htslib/kseq.h>
-#include <map>
 
 #define READ_DB_SUFFIX ".readdb"
 #define GZIPPED_READS_SUFFIX ".index"
@@ -28,21 +24,6 @@ KSEQ_INIT(gzFile, gzread)
 
 //
 ReadDB::ReadDB() : m_fai(NULL) {}
-
-// Split a string into parts based on the delimiter
-std::vector<std::string> split(std::string in, char delimiter) {
-    std::vector<std::string> out;
-    size_t lastPos = 0;
-    size_t pos = in.find_first_of(delimiter);
-
-    while (pos != std::string::npos) {
-        out.push_back(in.substr(lastPos, pos - lastPos));
-        lastPos = pos + 1;
-        pos = in.find_first_of(delimiter, lastPos);
-    }
-    out.push_back(in.substr(lastPos));
-    return out;
-}
 
 //
 void ReadDB::build(const std::string& input_reads_filename) {
@@ -238,7 +219,8 @@ std::string ReadDB::get_read_sequence(const std::string& read_id) const {
     int length;
     char* seq;
 
-    // this call is not threadsafe
+// this call is not threadsafe
+#pragma omp critical
     seq = fai_fetch(m_fai, read_id.c_str(), &length);
 
     if (seq == NULL) {
