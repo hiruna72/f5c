@@ -234,6 +234,8 @@ std::string ReadDB::get_read_sequence(const std::string& read_id) const {
     int length;
     char* seq;
 
+    // This call is not threadsafe
+    // TODO: VERY IMPORTANT TO ADD A LOCK IF USING PTHREADS/OPENMP!!
     seq = fai_fetch(m_fai, read_id.c_str(), &length);
 
     if (seq == NULL) {
