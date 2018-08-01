@@ -34,8 +34,8 @@ core_t* init_core(const char* bamfilename, const char* fastafile,
     NULL_CHK(core->fai);
 
     // readbb
-    core->readbb = new ReadDB;
-    core->readbb->load(fastqfile);
+    core->readbb = ReadDB_alloc();
+    ReadDB_load(core->readbb, fastqfile);
 
     //model
     core->model = (model_t*)malloc(sizeof(model_t) *
@@ -49,7 +49,7 @@ core_t* init_core(const char* bamfilename, const char* fastafile,
 
 void free_core(core_t* core) {
     free(core->model);
-    delete core->readbb;
+    ReadDB_free(core->readbb);
     fai_destroy(core->fai);
     sam_itr_destroy(core->itr);
     bam_hdr_destroy(core->m_hdr);
@@ -129,11 +129,14 @@ int32_t load_db(core_t* core, db_t* db) {
         // get the fast5
 
         // Get the read type from the fast5 file
-        std::string qname = bam_get_qname(db->bam_rec[i]);
-        char* fast5_path =
-            (char*)malloc(core->readbb->get_signal_path(qname).size() +
-                          10); // is +10 needed? do errorcheck
-        strcpy(fast5_path, core->readbb->get_signal_path(qname).c_str());
+        // TODO: Free the two strings below? Also strlen is inefficent
+        const char* qname = bam_get_qname(db->bam_rec[i]);
+        const char* path = ReadDB_get_signal_path(core->readbb, qname);
+        int len = strlen(path) + 10;
+
+        char* fast5_path = (char*)malloc(len + 10);
+        MALLOC_CHK(fast5_path);
+        strcpy(fast5_path, qname);
 
         hid_t hdf5_file = fast5_open(fast5_path);
         if (hdf5_file >= 0) {
@@ -147,7 +150,7 @@ int32_t load_db(core_t* core, db_t* db) {
         }
 
         if (core->opt.print_raw) {
-            printf("@%s\t%s\t%llu\n", qname.c_str(), fast5_path,
+            printf("@%s\t%s\t%llu\n", qname, fast5_path,
                    db->f5[i]->nsample);
             uint32_t j = 0;
             for (j = 0; j < db->f5[i]->nsample; j++) {
