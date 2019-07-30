@@ -24,7 +24,7 @@ execute_process(
 
 execute_process(
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-    # COMMAND curl -o ./hdf5.tar.bz2 https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${HDF5_MAJOR_MINOR}/hdf5-${HDF5_VERSION}/src/hdf5-${HDF5_VERSION}.tar.bz2
+    COMMAND curl -o ./hdf5.tar.bz2 https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${HDF5_MAJOR_MINOR}/hdf5-${HDF5_VERSION}/src/hdf5-${HDF5_VERSION}.tar.bz2
     COMMAND tar -xf hdf5.tar.bz2  
 )
 
