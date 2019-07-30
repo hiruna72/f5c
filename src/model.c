@@ -26,7 +26,8 @@ void read_model(model_t* model, const char* file) {
     uint32_t num_k = 0;
     uint32_t i = 0;
 
-    while ((readlinebytes = getline(&buffer, &bufferSize, fp)) != -1) {
+    // while ((readlinebytes = getline(&buffer, &bufferSize, fp)) != -1) {
+    while (1) {
         if (buffer[0] == '#' ||
             strcmp(
                 buffer,

@@ -168,14 +168,14 @@ struct tsv_record* get_tsv_line(FILE* fp) {
     char* buf = NULL;
     size_t buf_size = 0;
 
-    if (getline(&buf, &buf_size, fp) == -1) {
-        free(record);
-        if(buf_size>0){
-            free(buf);
-        }
-        return NULL;
+    // if (getline(&buf, &buf_size, fp) == -1) {
+    //     free(record);
+    //     if(buf_size>0){
+    //         free(buf);
+    //     }
+    //     return NULL;
 
-    }
+    // }
 
     record->chromosome = strdup(strtok(buf, "\t"));
     record->start = atoi(strtok(NULL, "\t"));
