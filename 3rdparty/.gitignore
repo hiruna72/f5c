@@ -1,0 +1,4 @@
+hdf5/include/*
+hdf5/lib/*
+htslib/include/*
+htslib/lib/*
