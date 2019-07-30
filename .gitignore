@@ -73,4 +73,3 @@ src/config.h
 test/ecoli_2kb_region/reads.fasta.index.readdb
 /profile.nvprof
 !CMakeLists.txt
-

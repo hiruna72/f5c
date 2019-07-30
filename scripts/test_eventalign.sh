@@ -1,13 +1,13 @@
-	#!/bin/sh
+#!/bin/sh
 
 # exit when command fails
 set -e
 
-. scripts/common.sh
+# . scripts/common.sh
 
 # defaults
-exepath=./f5c
-testdir=test/ecoli_2kb_region
+exepath=../build/src/f5c_cmake
+testdir=../test/ecoli_2kb_region
 # testdir=test/chr22_meth_example
 
 bamfile=${testdir}/reads.sorted.bam
@@ -172,14 +172,15 @@ done
 
 if [ -z "$mode" ]; then
 	if [ $testdir = test/chr22_meth_example ]; then
-		# ${exepath} index -d ${testdir}/fast5_files ${testdir}/reads.fastq
+		${exepath} index -d ${testdir}/fast5_files ${testdir}/reads.fastq
 		${exepath} eventalign -b ${bamfile} -g ${ref} -r ${reads} --secondary=yes --min-mapq=0 -t "$threads" -K "$batchsize" -B "$max_bases" > ${testdir}/f5c_event_align.txt
 	else
+		# ${exepath} index -d ${testdir}/fast5_files ${testdir}/reads.fasta
 		#test -e ${testdir}/f5c_event_align.summary.txt && rm ${testdir}/f5c_event_align.summary.txt
 		${exepath} eventalign -b ${bamfile} -g ${ref} -r ${reads} --secondary=yes --min-mapq=0 -B "$max_bases" > ${testdir}/f5c_event_align.txt
 	fi
 		cp f5c_event_align.summary.txt ${testdir}/f5c_event_align.summary.txt
-		execute_test
+		# execute_test
 else
 	mode_test "$@"
 fi
