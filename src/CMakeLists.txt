@@ -51,7 +51,10 @@ set (EVENT_ALIGN eventalign.c)
 
 
 # Build an executable
-add_executable(f5c_cmake ${MAIN} ${METH_MAIN} ${F5C} ${EVENTS} ${NANOPOLISH_READ} ${NANOPOLISH_INDEX} ${MODEL} ${ALIGN} ${METH} ${HMM} ${FREQ} ${EVENT_ALIGN})
+# add_executable(f5c_exe ${MAIN} ${METH_MAIN} ${F5C} ${EVENTS} ${NANOPOLISH_READ} ${NANOPOLISH_INDEX} ${MODEL} ${ALIGN} ${METH} ${HMM} ${FREQ} ${EVENT_ALIGN})
+
+# Build a shared lib
+add_library(f5cshared SHARED ${MAIN} ${METH_MAIN} ${F5C} ${EVENTS} ${NANOPOLISH_READ} ${NANOPOLISH_INDEX} ${MODEL} ${ALIGN} ${METH} ${HMM} ${FREQ} ${EVENT_ALIGN})
 
 
 # htslib dependency
@@ -61,4 +64,7 @@ set (htslib_static "${PROJECT_BINARY_DIR}/lib/libhts.a")
 set (hdf5_static "${PROJECT_BINARY_DIR}/lib/libhdf5.a")
 
 # link with dependencies
-target_link_libraries(f5c_cmake ${htslib_static} -I${PROJECT_SOURCE_DIR}/3rdparty/hdf5/include/ ${hdf5_static} -lpthread -lz -lhdf5_serial -ldl)
+# target_link_libraries(f5c_exe ${htslib_static} -I${PROJECT_SOURCE_DIR}/3rdparty/hdf5/include/ ${hdf5_static} -lpthread -lz -lhdf5_serial -ldl)
+
+# link with dependencies
+target_link_libraries(f5cshared ${htslib_static} -I${PROJECT_SOURCE_DIR}/3rdparty/hdf5/include/ ${hdf5_static} -lpthread -lz -lhdf5_serial -ldl)

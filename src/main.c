@@ -12,6 +12,7 @@
 #include <signal.h>
 #include "f5cmisc.h"
 #include "error.h"
+#include "interface.h"
 
 #ifdef HAVE_EXECINFO_H
     #include <execinfo.h>
@@ -57,7 +58,7 @@ int print_usage(){
 }
 
 
-int main(int argc, char* argv[]){
+int init(int argc, char* argv[]){
 
     double realtime0 = realtime();
     signal(SIGSEGV, sig_handler);

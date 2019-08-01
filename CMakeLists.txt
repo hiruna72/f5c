@@ -31,21 +31,23 @@ set(HDF5_MAJOR_MINOR 1.10)
 # second step (build)
 # add_custom_target(htslib ALL
 #     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/htslib-${HTS_VERSION}
-#     COMMAND ./configure --prefix=`pwd`/../ --enable-bz2=no --enable-lzma=no --with-libdeflate=no --enable-libcurl=no  --enable-gcs=no --enable-s3=no
+# 	  COMMAND make clean
+#     COMMAND ./configure --prefix=`pwd`/../ --enable-bz2=no --enable-lzma=no --with-libdeflate=no --enable-libcurl=no  --enable-gcs=no --enable-s3=no CFLAGS=-fPIC CXXFLAGS=-fPIC
 #     COMMAND make -j4
 #     COMMAND make install
 # )
 
 # add_custom_target(hdf5 ALL
 #     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/hdf5-${HDF5_VERSION}
-#     COMMAND ./configure --prefix=`pwd`/../
+#     COMMAND make clean
+#     COMMAND ./configure --prefix=`pwd`/../ --enable-shared CFLAGS=-fPIC CXXFLAGS=-fPIC
 #     COMMAND make -j4
 #     COMMAND make install
 # )
 message(STATUS "Configure F5c")
 
 # Set project name
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -rdynamic -Wall -O2")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -fPIC -rdynamic -Wall -O2")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -rdynamic -Wall -O2 -std=c++11 ")
 
 # CMAKE_EXE_LINKER_FLAGS
@@ -54,4 +56,4 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -rdynamic -Wall -O2 -std=c++11 ")
 # CMAKE_STATIC_LINKER_FLAGS
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/src)
-
+add_subdirectory(${CMAKE_SOURCE_DIR}/examples)
