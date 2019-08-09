@@ -23,6 +23,10 @@
 #define READ_DB_SUFFIX ".readdb"
 #define GZIPPED_READS_SUFFIX ".index"
 
+
+
+
+
 // Tell KSEQ what functions to use to open/read files
 KSEQ_INIT(gzFile, gzread)
 

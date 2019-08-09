@@ -9,6 +9,34 @@
 #include <unistd.h>
 #include "logsum.h"
 
+
+
+/**
+//////////////delete start
+#include "interface.h"
+#include <android/log.h>
+
+#define  LOG_TAG "f5c_native_log"
+
+// #define fprintf(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
+
+#define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
+#define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+// If you want you can add other log definition for info, warning etc
+
+//delete this
+void myprintf_meth(FILE *stream, const char *format, ...){
+   LOGD("%s\n",format);
+}
+
+
+#define fprintf(...) myprintf_meth(__VA_ARGS__,__FILE__,__LINE__)
+// #define fprintf(...) LOGD("%s %s",__FILE__,__VA_ARGS__)
+// #define fprintf(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG,__VA_ARGS__,__LINE__)
+#endif
+//////////////delete end
+**/
+
 /* Input/processing/output interleave framework :
 unless IO_PROC_NO_INTERLEAVE is set input, processing and output are interleaved
 main thread

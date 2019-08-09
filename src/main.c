@@ -18,6 +18,31 @@
     #include <execinfo.h>
 #endif
 
+//////////////delete start
+#include <android/log.h>
+
+#define  LOG_TAG "f5c_native_log"
+
+// #define fprintf(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
+
+#define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
+#define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+// If you want you can add other log definition for info, warning etc
+
+//delete this
+void myprintf_main(FILE *stream, const char *format, ...){
+   LOGD("%s\n",format);
+}
+
+
+#define fprintf(...) myprintf_main(__VA_ARGS__,__FILE__,__LINE__)
+// #define fprintf(...) LOGD("%s %s",__FILE__,__VA_ARGS__)
+// #define fprintf(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG,__VA_ARGS__,__LINE__)
+//////////////delete end
+
+
+
+
 //make the segmentation faults a bit cool
 void sig_handler(int sig) {
 #ifdef HAVE_EXECINFO_H
@@ -44,7 +69,7 @@ int meth_main(int argc, char* argv[], int8_t mode);
 int index_main(int argc, char** argv);
 int freq_main(int argc, char **argv);
 
-int print_usage(){
+void print_usage(){
 
     fprintf(stderr,"Usage: f5c <command> [options]\n\n");
     fprintf(stderr,"command:\n");
@@ -54,25 +79,29 @@ int print_usage(){
     fprintf(stderr,"         eventalign          Align nanopore events to reference k-mers (optimised nanopolish eventalign)\n\n");
 
 
-    exit(EXIT_FAILURE);
+    // exit(EXIT_FAILURE);
 }
 
 
 int init(int argc, char* argv[]){
-
+    fprintf(stderr, "%s\n","starting....");
     double realtime0 = realtime();
     signal(SIGSEGV, sig_handler);
 
     int ret=1;
 
     if(argc<2){
-        return print_usage();
+        print_usage();
+        return 0;
     }
     if(strcmp(argv[1],"index")==0){
         ret=index_main(argc-1, argv+1);
+        LOGD("index done 10 = %d\n",10);
     }
     else if(strcmp(argv[1],"call-methylation")==0){
+        LOGD("calling methylation....\n");
         ret=meth_main(argc-1, argv+1,0);
+        LOGD("methylation done ....\n");
     }
     else if(strcmp(argv[1],"eventalign")==0){
         ret=meth_main(argc-1, argv+1,1);
@@ -93,5 +122,7 @@ int init(int argc, char* argv[]){
     fprintf(stderr, "\n[%s] Real time: %.3f sec; CPU time: %.3f sec; Peak RAM: %.3f GB\n\n",
             __func__, realtime() - realtime0, cputime(),peakrss() / 1024.0 / 1024.0 / 1024.0);
 
+    LOGD("f5c done ....\n");
     return ret;
 }
+

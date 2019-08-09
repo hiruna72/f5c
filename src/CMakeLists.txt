@@ -35,7 +35,7 @@ add_custom_target(creating_config ALL
 )
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-
+# set (MAIN_METH_BOTH main.c meth_main.c f5cmisc.h error.h f5c.h fast5lite.h logsum.h)
 set (MAIN main.c f5cmisc.h error.h)
 set (METH_MAIN meth_main.c f5c.h fast5lite.h f5cmisc.h logsum.h)
 set (F5C f5c.c f5c.h fast5lite.h f5cmisc.h)
@@ -58,13 +58,18 @@ add_library(f5cshared SHARED ${MAIN} ${METH_MAIN} ${F5C} ${EVENTS} ${NANOPOLISH_
 
 
 # htslib dependency
-set (htslib_static "${PROJECT_BINARY_DIR}/lib/libhts.a")
+set (htslib_static "${PROJECT_SOURCE_DIR}/3rdparty/android_tablet/libhts.a")
+# set (htslib_static "${PROJECT_BINARY_DIR}/lib/libhts.a")
 
 # hdf5 dependency
-set (hdf5_static "${PROJECT_BINARY_DIR}/lib/libhdf5.a")
+set (hdf5_static "${PROJECT_SOURCE_DIR}/3rdparty/android_tablet/libhdf5.a")
+# set (hdf5_static "${PROJECT_BINARY_DIR}/lib/libhdf5.a")
 
 # link with dependencies
 # target_link_libraries(f5c_exe ${htslib_static} -I${PROJECT_SOURCE_DIR}/3rdparty/hdf5/include/ ${hdf5_static} -lpthread -lz -lhdf5_serial -ldl)
 
 # link with dependencies
-target_link_libraries(f5cshared ${htslib_static} -I${PROJECT_SOURCE_DIR}/3rdparty/hdf5/include/ ${hdf5_static} -lpthread -lz -lhdf5_serial -ldl)
+target_link_libraries(f5cshared ${htslib_static} -I${PROJECT_SOURCE_DIR}/3rdparty/hdf5/include/ ${hdf5_static} -lz -llog -ldl)
+
+
+# cmake .. -G Ninja -DCMAKE_TOOLCHAIN_FILE:STRING=/home/twentyface/Android/Sdk/ndk-bundle/build/cmake/android.toolchain.cmake "-DANDROID_PLATFORM=android-24"

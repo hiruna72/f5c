@@ -6,6 +6,7 @@
 // nanopolish_read_db -- database of reads and their
 // associated signal data
 //
+#pragma once
 #ifndef NANOPOLISH_READ_DB
 #define NANOPOLISH_READ_DB
 

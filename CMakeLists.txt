@@ -15,20 +15,20 @@ set(HTS_VERSION 1.9)
 set(HDF5_VERSION 1.10.4)
 set(HDF5_MAJOR_MINOR 1.10)
 
-# configure step (the first step)
+# # dowload htslib and hdf5
 # execute_process(
 #     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 #     COMMAND curl -o ./htslib.tar.bz2 -L https://github.com/samtools/htslib/releases/download/${HTS_VERSION}/htslib-${HTS_VERSION}.tar.bz2
-#     COMMAND tar -xf htslib.tar.bz2  
+#     COMMAND curl -o ./hdf5.tar.bz2 https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${HDF5_MAJOR_MINOR}/hdf5-${HDF5_VERSION}/src/hdf5-${HDF5_VERSION}.tar.bz2
 # )
 
 # execute_process(
 #     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-#     COMMAND curl -o ./hdf5.tar.bz2 https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${HDF5_MAJOR_MINOR}/hdf5-${HDF5_VERSION}/src/hdf5-${HDF5_VERSION}.tar.bz2
+#     COMMAND tar -xf htslib.tar.bz2  
 #     COMMAND tar -xf hdf5.tar.bz2  
 # )
 
-# second step (build)
+# # second step (build)
 # add_custom_target(htslib ALL
 #     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/htslib-${HTS_VERSION}
 # 	  COMMAND make clean
