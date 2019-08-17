@@ -1,11 +1,29 @@
 #ifndef ERROR_H
 #define ERROR_H
+#define LOG_TAG "f5c-android"
 
 #include <errno.h>
+#include <android/log.h>
 
 #define WARN "[%s::WARNING]\033[1;33m "
 #define ERR "[%s::ERROR]\033[1;31m "
 #define CEND "\033[0m\n"
+
+#define ANDROIDLOGI(...)                                                      \
+    __android_log_print(ANDROID_LOG_INFO, LOG_TAG,                        \
+            __VA_ARGS__)
+
+#define ANDROIDLOGE(...)                                                      \
+    __android_log_print(ANDROID_LOG_ERROR, LOG_TAG,                        \
+            __VA_ARGS__)
+
+#define ANDROIDLOGD(...)                                                      \
+    __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG,                        \
+            __VA_ARGS__)
+
+#define ANDROIDLOGW(...)                                                      \
+    __android_log_print(ANDROID_LOG_WARN, LOG_TAG,                        \
+            __VA_ARGS__)
 
 #define STDERR(arg, ...)                                                      \
     fprintf(stderr, "[%s] " arg "\n", __func__,                        \
