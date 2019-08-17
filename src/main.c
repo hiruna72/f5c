@@ -81,7 +81,7 @@ int init(int argc, char* argv[]){
         ret=freq_main(argc-1, argv+1);
     }
     else{
-        fprintf(stderr,"[f5c] Unrecognised command %s\n",argv[1]);
+        ANDROIDLOGE("[f5c] Unrecognised command %s", argc[1])
         print_usage();
     }
 
@@ -90,7 +90,7 @@ int init(int argc, char* argv[]){
         fprintf(stderr, " %s", argv[i]);
     }
 
-    fprintf(stderr, "\n[%s] Real time: %.3f sec; CPU time: %.3f sec; Peak RAM: %.3f GB\n\n",
+    ANDROIDLOGI("[%s] Real time: %.3f sec; CPU time: %.3f sec; Peak RAM: %.3f GB",
             __func__, realtime() - realtime0, cputime(),peakrss() / 1024.0 / 1024.0 / 1024.0);
 
     return ret;
