@@ -49,6 +49,8 @@ set (HMM hmm.c f5c.h fast5lite.h f5cmisc.h matrix.h logsum.h)
 set (FREQ freq.c khash.h)
 set (EVENT_ALIGN eventalign.c)
 
+# Android Logging API for C/C++
+find_library(ANDROID_LOG_LIB log)
 
 # Build an executable
 # add_executable(f5c_exe ${MAIN} ${METH_MAIN} ${F5C} ${EVENTS} ${NANOPOLISH_READ} ${NANOPOLISH_INDEX} ${MODEL} ${ALIGN} ${METH} ${HMM} ${FREQ} ${EVENT_ALIGN})
@@ -67,4 +69,5 @@ set (hdf5_static "${PROJECT_BINARY_DIR}/lib/libhdf5.a")
 # target_link_libraries(f5c_exe ${htslib_static} -I${PROJECT_SOURCE_DIR}/3rdparty/hdf5/include/ ${hdf5_static} -lpthread -lz -lhdf5_serial -ldl)
 
 # link with dependencies
-target_link_libraries(f5cshared ${htslib_static} -I${PROJECT_SOURCE_DIR}/3rdparty/hdf5/include/ ${hdf5_static} -lpthread -lz -lhdf5_serial -ldl)
+#target_link_libraries(f5cshared ${htslib_static} -I${PROJECT_SOURCE_DIR}/3rdparty/hdf5/include/ ${hdf5_static} -lpthread -lz -lhdf5_serial -ldl)
+target_link_libraries(f5cshared ${htslib_static} -I${PROJECT_SOURCE_DIR}/3rdparty/hdf5/include/ ${hdf5_static} -lz -ldl ${ANDROID_LOG_LIB})
