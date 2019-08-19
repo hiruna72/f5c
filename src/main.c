@@ -33,7 +33,7 @@ void sig_handler(int sig) {
     backtrace_symbols_fd(&array[2], size - 1, STDERR_FILENO);
     fprintf(stderr, "\033[0m\n");
 #else
-    ERROR("I regret to inform that a segmentation fault occurred. But at least "
+    ANDROIDLOGE("I regret to inform that a segmentation fault occurred. But at least "
           "it is better than a wrong answer%s",
           ".");
 #endif
@@ -46,12 +46,12 @@ int freq_main(int argc, char **argv);
 
 int print_usage(){
 
-    fprintf(stderr,"Usage: f5c <command> [options]\n\n");
-    fprintf(stderr,"command:\n");
-    fprintf(stderr,"         index               Build an index mapping from basecalled reads to the signals measured by the sequencer (same as nanopolish index)\n");
-    fprintf(stderr,"         call-methylation    Classify nucleotides as methylated or not (optimised nanopolish call-methylation)\n");
-    fprintf(stderr,"         meth-freq           Calculate methylation frequency at genomic CpG sites (optimised nanopolish calculate_methylation_frequency.py)\n");
-    fprintf(stderr,"         eventalign          Align nanopore events to reference k-mers (optimised nanopolish eventalign)\n\n");
+    ANDROIDLOGI("Usage: f5c <command> [options]");
+    ANDROIDLOGI("command:");
+    ANDROIDLOGI("         index               Build an index mapping from basecalled reads to the signals measured by the sequencer (same as nanopolish index)");
+    ANDROIDLOGI("         call-methylation    Classify nucleotides as methylated or not (optimised nanopolish call-methylation)");
+    ANDROIDLOGI("         meth-freq           Calculate methylation frequency at genomic CpG sites (optimised nanopolish calculate_methylation_frequency.py)");
+    ANDROIDLOGI("         eventalign          Align nanopore events to reference k-mers (optimised nanopolish eventalign)");
 
 
     exit(EXIT_FAILURE);
@@ -81,7 +81,7 @@ int init(int argc, char* argv[]){
         ret=freq_main(argc-1, argv+1);
     }
     else{
-        ANDROIDLOGE("[f5c] Unrecognised command %s", argc[1])
+        ANDROIDLOGE("[f5c] Unrecognised command %s", argv[1]);
         print_usage();
     }
 
