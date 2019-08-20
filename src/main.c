@@ -45,20 +45,20 @@ int index_main(int argc, char** argv);
 int freq_main(int argc, char **argv);
 
 int print_usage(){
-
-    fprintf(stderr,"Usage: f5c <command> [options]\n\n");
-    fprintf(stderr,"command:\n");
-    fprintf(stderr,"         index               Build an index mapping from basecalled reads to the signals measured by the sequencer (same as nanopolish index)\n");
-    fprintf(stderr,"         call-methylation    Classify nucleotides as methylated or not (optimised nanopolish call-methylation)\n");
-    fprintf(stderr,"         meth-freq           Calculate methylation frequency at genomic CpG sites (optimised nanopolish calculate_methylation_frequency.py)\n");
-    fprintf(stderr,"         eventalign          Align nanopore events to reference k-mers (optimised nanopolish eventalign)\n\n");
+    LOG_INFO("working LOG_INFO %s number is %d","string",100);
+    LOG_INFO("%s","Usage: f5c <command> [options]\n\n");
+    LOG_INFO("%s","command:\n");
+    LOG_INFO("%s","         index               Build an index mapping from basecalled reads to the signals measured by the sequencer (same as nanopolish index)\n");
+    LOG_INFO("%s","         call-methylation    Classify nucleotides as methylated or not (optimised nanopolish call-methylation)\n");
+    LOG_INFO("%s","         meth-freq           Calculate methylation frequency at genomic CpG sites (optimised nanopolish calculate_methylation_frequency.py)\n");
+    LOG_INFO("%s","         eventalign          Align nanopore events to reference k-mers (optimised nanopolish eventalign)\n\n");
 
 
     exit(EXIT_FAILURE);
 }
 
 
-int init(int argc, char* argv[]){
+int main(int argc, char* argv[]){
 
     double realtime0 = realtime();
     signal(SIGSEGV, sig_handler);

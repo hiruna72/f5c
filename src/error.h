@@ -7,6 +7,19 @@
 #define ERR "[%s::ERROR]\033[1;31m "
 #define CEND "\033[0m\n"
 
+#if __ANDROID__
+#include<android/log.h>
+#define LOG_TAG "f5c-android"
+#endif
+
+
+#ifdef __ANDROID__ 
+#define LOG_INFO(arg, ...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__) 
+#else 
+#define LOG_INFO(arg, ...) fprintf(stderr, "[%s] " arg "\n", __func__,__VA_ARGS__) 
+#endif
+
+
 #define STDERR(arg, ...)                                                      \
     fprintf(stderr, "[%s] " arg "\n", __func__,                        \
             __VA_ARGS__)
