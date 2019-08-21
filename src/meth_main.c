@@ -295,18 +295,18 @@ int meth_main(int argc, char* argv[], int8_t mode) {
         PRINTTOSTREAM(
             fp_help,
             "Usage: f5c %s [OPTIONS] -r reads.fa -b alignments.bam -g genome.fa\n",mode==1 ? "eventalign" : "call-methylation");
-        PRINTTOSTREAM(fp_help,"   -r FILE                    fastq/fasta read file\n");
-        PRINTTOSTREAM(fp_help,"   -b FILE                    sorted bam file\n");
-        PRINTTOSTREAM(fp_help,"   -g FILE                    reference genome\n");
-        PRINTTOSTREAM(fp_help,"   -t INT                     number of threads [%d]\n",opt.num_thread);
-        PRINTTOSTREAM(fp_help,"   -K INT                     batch size (max number of reads loaded at once) [%d]\n",opt.batch_size);
-        PRINTTOSTREAM(fp_help,"   -B FLOAT[K/M/G]            max number of bases loaded at once [%.1fM]\n",opt.batch_size_bases/(float)(1000*1000));
-        PRINTTOSTREAM(fp_help,"   -h                         help\n");
-        PRINTTOSTREAM(fp_help,"   --min-mapq INT             minimum mapping quality [%d]\n",opt.min_mapq);
-        PRINTTOSTREAM(fp_help,"   --secondary=yes|no         consider secondary mappings or not [%s]\n",(opt.flag&F5C_SECONDARY_YES)?"yes":"no");
-        PRINTTOSTREAM(fp_help,"   --skip-unreadable=yes|no   skip any unreadable fast5 or terminate program [%s]\n",(opt.flag&F5C_SKIP_UNREADABLE?"yes":"no"));
-        PRINTTOSTREAM(fp_help,"   --verbose INT              verbosity level [%d]\n",opt.verbosity);
-        PRINTTOSTREAM(fp_help,"   --version                  print version\n");
+        PRINTTOSTREAM(fp_help, "%s","   -r FILE                    fastq/fasta read file\n");
+        PRINTTOSTREAM(fp_help, "%s","   -b FILE                    sorted bam file\n");
+        PRINTTOSTREAM(fp_help, "%s","   -g FILE                    reference genome\n");
+        PRINTTOSTREAM(fp_help, "%s","   -t INT                     number of threads [%d]\n",opt.num_thread);
+        PRINTTOSTREAM(fp_help, "%s","   -K INT                     batch size (max number of reads loaded at once) [%d]\n",opt.batch_size);
+        PRINTTOSTREAM(fp_help, "%s","   -B FLOAT[K/M/G]            max number of bases loaded at once [%.1fM]\n",opt.batch_size_bases/(float)(1000*1000));
+        PRINTTOSTREAM(fp_help, "%s","   -h                         help\n");
+        PRINTTOSTREAM(fp_help, "%s","   --min-mapq INT             minimum mapping quality [%d]\n",opt.min_mapq);
+        PRINTTOSTREAM(fp_help, "%s","   --secondary=yes|no         consider secondary mappings or not [%s]\n",(opt.flag&F5C_SECONDARY_YES)?"yes":"no");
+        PRINTTOSTREAM(fp_help, "%s","   --skip-unreadable=yes|no   skip any unreadable fast5 or terminate program [%s]\n",(opt.flag&F5C_SKIP_UNREADABLE?"yes":"no"));
+        PRINTTOSTREAM(fp_help, "%s","   --verbose INT              verbosity level [%d]\n",opt.verbosity);
+        PRINTTOSTREAM(fp_help, "%s","   --version                  print version\n");
 #ifdef HAVE_CUDA
         PRINTTOSTREAM(fp_help,"   --disable-cuda=yes|no      disable running on CUDA [%s]\n",(opt.flag&F5C_DISABLE_CUDA?"yes":"no"));
         PRINTTOSTREAM(fp_help,"   --cuda-dev-id INT          CUDA device ID to run kernels on [%d]\n",opt.cuda_dev_id);
@@ -316,18 +316,18 @@ int meth_main(int argc, char* argv[], int8_t mode) {
 #endif
 
 
-        PRINTTOSTREAM(fp_help,"advanced options:\n");
-        PRINTTOSTREAM(fp_help,"   --kmer-model FILE          custom k-mer model file\n");
-        PRINTTOSTREAM(fp_help,"   --print-events=yes|no      prints the event table\n");
-        PRINTTOSTREAM(fp_help,"   --print-banded-aln=yes|no  prints the event alignment\n");
-        PRINTTOSTREAM(fp_help,"   --print-scaling=yes|no     prints the estimated scalings\n");
-        PRINTTOSTREAM(fp_help,"   --print-raw=yes|no         prints the raw signal\n");
-        PRINTTOSTREAM(fp_help,"   --debug-break [INT]        break after processing the specified batch\n");
-        PRINTTOSTREAM(fp_help,"   --profile-cpu=yes|no       process section by section (used for profiling on CPU)\n");
-        PRINTTOSTREAM(fp_help,"   --skip-ultra FILE          skip ultra long reads and write those entries to the bam file provided as the argument\n");
-        PRINTTOSTREAM(fp_help,"   --ultra-thresh [INT]       threshold to skip ultra long reads [%ld]\n",opt.ultra_thresh);
-        PRINTTOSTREAM(fp_help,"   --write-dump=yes|no        write the fast5 dump to a file or not\n");
-        PRINTTOSTREAM(fp_help,"   --read-dump=yes|no         read from a fast5 dump file or not\n");
+        PRINTTOSTREAM(fp_help, "%s","advanced options:\n");
+        PRINTTOSTREAM(fp_help, "%s","   --kmer-model FILE          custom k-mer model file\n");
+        PRINTTOSTREAM(fp_help, "%s","   --print-events=yes|no      prints the event table\n");
+        PRINTTOSTREAM(fp_help, "%s","   --print-banded-aln=yes|no  prints the event alignment\n");
+        PRINTTOSTREAM(fp_help, "%s","   --print-scaling=yes|no     prints the estimated scalings\n");
+        PRINTTOSTREAM(fp_help, "%s","   --print-raw=yes|no         prints the raw signal\n");
+        PRINTTOSTREAM(fp_help, "%s","   --debug-break [INT]        break after processing the specified batch\n");
+        PRINTTOSTREAM(fp_help, "%s","   --profile-cpu=yes|no       process section by section (used for profiling on CPU)\n");
+        PRINTTOSTREAM(fp_help, "%s","   --skip-ultra FILE          skip ultra long reads and write those entries to the bam file provided as the argument\n");
+        PRINTTOSTREAM(fp_help, "%s","   --ultra-thresh [INT]       threshold to skip ultra long reads [%ld]\n",opt.ultra_thresh);
+        PRINTTOSTREAM(fp_help, "%s","   --write-dump=yes|no        write the fast5 dump to a file or not\n");
+        PRINTTOSTREAM(fp_help, "%s","   --read-dump=yes|no         read from a fast5 dump file or not\n");
 #ifdef HAVE_CUDA
         PRINTTOSTREAM(fp_help,"   - cuda-mem-frac FLOAT      Fraction of free GPU memory to allocate [0.9 (0.7 for tegra)]\n");
         PRINTTOSTREAM(fp_help,"   --cuda-block-size\n");
