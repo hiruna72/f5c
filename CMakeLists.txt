@@ -4,6 +4,15 @@ if(" ${CMAKE_SOURCE_DIR}" STREQUAL " ${CMAKE_BINARY_DIR}")
        You should create a separate directory for build files.")
 endif()
 
+# choose the architecture 
+set(DEPLOY_PLATFORM "unknown" CACHE STRING "choose the instruction set architecture")
+set_property(CACHE DEPLOY_PLATFORM PROPERTY STRINGS unknown x86 arm64-v8a armeabi-v7a)
+IF (${DEPLOY_PLATFORM} STREQUAL "unknown")
+	message(FATAL_ERROR "choose the DEPLOY_PLATFORM") 
+	return() # This is to stop proceeding further and to stop opencv getting set to the default ANDROID_ABI
+ENDIF()
+
+
 # Set minimum cmake version + cmake settings
 cmake_minimum_required (VERSION 3.9)
 cmake_policy(SET CMP0048 OLD)
@@ -44,16 +53,13 @@ set(HDF5_MAJOR_MINOR 1.10)
 #     COMMAND make -j4
 #     COMMAND make install
 # )
+	
 message(STATUS "Configure F5c")
 
 # Set project name
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -fPIC -rdynamic -Wall -O2")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -rdynamic -Wall -O2 -std=c++11 ")
 
-# CMAKE_EXE_LINKER_FLAGS
-# CMAKE_MODULE_LINKER_FLAGS
-# CMAKE_SHARED_LINKER_FLAGS
-# CMAKE_STATIC_LINKER_FLAGS
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/src)
-add_subdirectory(${CMAKE_SOURCE_DIR}/examples)
+# add_subdirectory(${CMAKE_SOURCE_DIR}/examples)

@@ -1,6 +1,6 @@
 # Find all the files which need to be compiled
-include_directories(${PROJECT_BINARY_DIR}/include)
-include_directories(${PROJECT_BINARY_DIR}/include/htslib)
+include_directories(${PROJECT_SOURCE_DIR}/3rdparty/include)
+include_directories(${PROJECT_SOURCE_DIR}/3rdparty/include/htslib)
 
 # until making f5c a C project use g++
 set_source_files_properties(main.c PROPERTIES LANGUAGE CXX)
@@ -58,13 +58,19 @@ add_library(f5cshared SHARED ${MAIN} ${METH_MAIN} ${F5C} ${EVENTS} ${NANOPOLISH_
 
 
 # htslib dependency
-set (htslib_static "${PROJECT_BINARY_DIR}/lib/libhts.a")
+set (htslib_static "${PROJECT_SOURCE_DIR}/3rdparty/${DEPLOY_PLATFORM}/libhts.a")
 
 # hdf5 dependency
-set (hdf5_static "${PROJECT_BINARY_DIR}/lib/libhdf5.a")
+set (hdf5_static "${PROJECT_SOURCE_DIR}/3rdparty/${DEPLOY_PLATFORM}/libhdf5.a")
 
 # link with dependencies
-# target_link_libraries(f5c_exe ${htslib_static} -I${PROJECT_SOURCE_DIR}/3rdparty/hdf5/include/ ${hdf5_static} -lpthread -lz -lhdf5_serial -ldl)
+# target_link_libraries(f5c_exe -static ${htslib_static} ${hdf5_static} -lpthread -lz -ldl)
 
 # link with dependencies
-target_link_libraries(f5cshared ${htslib_static} -I${PROJECT_SOURCE_DIR}/3rdparty/hdf5/include/ ${hdf5_static} -lpthread -lz -lhdf5_serial -ldl)
+IF (${DEPLOY_PLATFORM} STREQUAL "x86")
+	target_link_libraries(f5cshared ${htslib_static} ${hdf5_static} -lz -lpthread -ldl)
+ELSE()
+	find_library(ANDROID_LOG_LIB log)
+	target_link_libraries(f5cshared ${htslib_static} ${hdf5_static} ${ANDROID_LOG_LIB} -lz -ldl)
+
+ENDIF()
