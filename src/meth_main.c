@@ -134,7 +134,7 @@ void* pthread_processor(void* voidargs) {
     //process
     process_db(core, db);
 
-    fprintf(stderr, "[%s::%.3f*%.2f] %d Entries (%.1fM bases) processed\n", __func__,
+    INFO("[%s::%.3f*%.2f] %d Entries (%.1fM bases) processed\n", __func__,
                 realtime() - realtime0, cputime() / (realtime() - realtime0),
                 db->n_bam_rec,db->sum_bases/(1000.0*1000.0));
 
@@ -145,7 +145,7 @@ void* pthread_processor(void* voidargs) {
     pthread_mutex_unlock(&args->mutex);
 
     if(core->opt.verbosity > 1){
-        fprintf(stderr, "[%s::%.3f*%.2f] Signal sent by processor thread!\n", __func__,
+        INFO("[%s::%.3f*%.2f] Signal sent by processor thread!\n", __func__,
                 realtime() - realtime0, cputime() / (realtime() - realtime0));
     }
 
@@ -168,7 +168,7 @@ void* pthread_post_processor(void* voidargs){
     pthread_mutex_unlock(&args->mutex);
 
     if(core->opt.verbosity > 1){
-        fprintf(stderr, "[%s::%.3f*%.2f] Signal got by post-processor thread!\n", __func__,
+        INFO("[%s::%.3f*%.2f] Signal got by post-processor thread!\n", __func__,
                 realtime() - realtime0, cputime() / (realtime() - realtime0));
     }
 
@@ -232,7 +232,7 @@ int meth_main(int argc, char* argv[], int8_t mode) {
             opt.verbosity = atoi(optarg);
         }
         else if (c=='V'){
-            fprintf(stderr,"F5C %s\n",F5C_VERSION);
+            STDERR("F5C %s\n",F5C_VERSION);
             exit(EXIT_SUCCESS);
         }
         else if (c=='h'){
@@ -292,45 +292,45 @@ int meth_main(int argc, char* argv[], int8_t mode) {
     }
 
     if (fastqfile == NULL || bamfilename == NULL || fastafile == NULL || fp_help == stdout) {
-        fprintf(
+        PRINTTOSTREAM(
             fp_help,
             "Usage: f5c %s [OPTIONS] -r reads.fa -b alignments.bam -g genome.fa\n",mode==1 ? "eventalign" : "call-methylation");
-        fprintf(fp_help,"   -r FILE                    fastq/fasta read file\n");
-        fprintf(fp_help,"   -b FILE                    sorted bam file\n");
-        fprintf(fp_help,"   -g FILE                    reference genome\n");
-        fprintf(fp_help,"   -t INT                     number of threads [%d]\n",opt.num_thread);
-        fprintf(fp_help,"   -K INT                     batch size (max number of reads loaded at once) [%d]\n",opt.batch_size);
-        fprintf(fp_help,"   -B FLOAT[K/M/G]            max number of bases loaded at once [%.1fM]\n",opt.batch_size_bases/(float)(1000*1000));
-        fprintf(fp_help,"   -h                         help\n");
-        fprintf(fp_help,"   --min-mapq INT             minimum mapping quality [%d]\n",opt.min_mapq);
-        fprintf(fp_help,"   --secondary=yes|no         consider secondary mappings or not [%s]\n",(opt.flag&F5C_SECONDARY_YES)?"yes":"no");
-        fprintf(fp_help,"   --skip-unreadable=yes|no   skip any unreadable fast5 or terminate program [%s]\n",(opt.flag&F5C_SKIP_UNREADABLE?"yes":"no"));
-        fprintf(fp_help,"   --verbose INT              verbosity level [%d]\n",opt.verbosity);
-        fprintf(fp_help,"   --version                  print version\n");
+        PRINTTOSTREAM(fp_help,"   -r FILE                    fastq/fasta read file\n");
+        PRINTTOSTREAM(fp_help,"   -b FILE                    sorted bam file\n");
+        PRINTTOSTREAM(fp_help,"   -g FILE                    reference genome\n");
+        PRINTTOSTREAM(fp_help,"   -t INT                     number of threads [%d]\n",opt.num_thread);
+        PRINTTOSTREAM(fp_help,"   -K INT                     batch size (max number of reads loaded at once) [%d]\n",opt.batch_size);
+        PRINTTOSTREAM(fp_help,"   -B FLOAT[K/M/G]            max number of bases loaded at once [%.1fM]\n",opt.batch_size_bases/(float)(1000*1000));
+        PRINTTOSTREAM(fp_help,"   -h                         help\n");
+        PRINTTOSTREAM(fp_help,"   --min-mapq INT             minimum mapping quality [%d]\n",opt.min_mapq);
+        PRINTTOSTREAM(fp_help,"   --secondary=yes|no         consider secondary mappings or not [%s]\n",(opt.flag&F5C_SECONDARY_YES)?"yes":"no");
+        PRINTTOSTREAM(fp_help,"   --skip-unreadable=yes|no   skip any unreadable fast5 or terminate program [%s]\n",(opt.flag&F5C_SKIP_UNREADABLE?"yes":"no"));
+        PRINTTOSTREAM(fp_help,"   --verbose INT              verbosity level [%d]\n",opt.verbosity);
+        PRINTTOSTREAM(fp_help,"   --version                  print version\n");
 #ifdef HAVE_CUDA
-        fprintf(fp_help,"   --disable-cuda=yes|no      disable running on CUDA [%s]\n",(opt.flag&F5C_DISABLE_CUDA?"yes":"no"));
-        fprintf(fp_help,"   --cuda-dev-id INT          CUDA device ID to run kernels on [%d]\n",opt.cuda_dev_id);
-        fprintf(fp_help,"   --cuda-max-lf FLOAT        reads with length <= cuda-max-lf*avg_readlen on GPU, rest on CPU [%.1f]\n",opt.cuda_max_readlen);
-        fprintf(fp_help,"   --cuda-avg-epk FLOAT       average number of events per kmer - for allocating GPU arrays [%.1f]\n",opt.cuda_avg_events_per_kmer);
-        fprintf(fp_help,"   --cuda-max-epk FLOAT       reads with events per kmer <= cuda_max_epk on GPU, rest on CPU [%.1f]\n",opt.cuda_max_avg_events_per_kmer);
+        PRINTTOSTREAM(fp_help,"   --disable-cuda=yes|no      disable running on CUDA [%s]\n",(opt.flag&F5C_DISABLE_CUDA?"yes":"no"));
+        PRINTTOSTREAM(fp_help,"   --cuda-dev-id INT          CUDA device ID to run kernels on [%d]\n",opt.cuda_dev_id);
+        PRINTTOSTREAM(fp_help,"   --cuda-max-lf FLOAT        reads with length <= cuda-max-lf*avg_readlen on GPU, rest on CPU [%.1f]\n",opt.cuda_max_readlen);
+        PRINTTOSTREAM(fp_help,"   --cuda-avg-epk FLOAT       average number of events per kmer - for allocating GPU arrays [%.1f]\n",opt.cuda_avg_events_per_kmer);
+        PRINTTOSTREAM(fp_help,"   --cuda-max-epk FLOAT       reads with events per kmer <= cuda_max_epk on GPU, rest on CPU [%.1f]\n",opt.cuda_max_avg_events_per_kmer);
 #endif
 
 
-        fprintf(fp_help,"advanced options:\n");
-        fprintf(fp_help,"   --kmer-model FILE          custom k-mer model file\n");
-        fprintf(fp_help,"   --print-events=yes|no      prints the event table\n");
-        fprintf(fp_help,"   --print-banded-aln=yes|no  prints the event alignment\n");
-        fprintf(fp_help,"   --print-scaling=yes|no     prints the estimated scalings\n");
-        fprintf(fp_help,"   --print-raw=yes|no         prints the raw signal\n");
-        fprintf(fp_help,"   --debug-break [INT]        break after processing the specified batch\n");
-        fprintf(fp_help,"   --profile-cpu=yes|no       process section by section (used for profiling on CPU)\n");
-        fprintf(fp_help,"   --skip-ultra FILE          skip ultra long reads and write those entries to the bam file provided as the argument\n");
-        fprintf(fp_help,"   --ultra-thresh [INT]       threshold to skip ultra long reads [%ld]\n",opt.ultra_thresh);
-        fprintf(fp_help,"   --write-dump=yes|no        write the fast5 dump to a file or not\n");
-        fprintf(fp_help,"   --read-dump=yes|no         read from a fast5 dump file or not\n");
+        PRINTTOSTREAM(fp_help,"advanced options:\n");
+        PRINTTOSTREAM(fp_help,"   --kmer-model FILE          custom k-mer model file\n");
+        PRINTTOSTREAM(fp_help,"   --print-events=yes|no      prints the event table\n");
+        PRINTTOSTREAM(fp_help,"   --print-banded-aln=yes|no  prints the event alignment\n");
+        PRINTTOSTREAM(fp_help,"   --print-scaling=yes|no     prints the estimated scalings\n");
+        PRINTTOSTREAM(fp_help,"   --print-raw=yes|no         prints the raw signal\n");
+        PRINTTOSTREAM(fp_help,"   --debug-break [INT]        break after processing the specified batch\n");
+        PRINTTOSTREAM(fp_help,"   --profile-cpu=yes|no       process section by section (used for profiling on CPU)\n");
+        PRINTTOSTREAM(fp_help,"   --skip-ultra FILE          skip ultra long reads and write those entries to the bam file provided as the argument\n");
+        PRINTTOSTREAM(fp_help,"   --ultra-thresh [INT]       threshold to skip ultra long reads [%ld]\n",opt.ultra_thresh);
+        PRINTTOSTREAM(fp_help,"   --write-dump=yes|no        write the fast5 dump to a file or not\n");
+        PRINTTOSTREAM(fp_help,"   --read-dump=yes|no         read from a fast5 dump file or not\n");
 #ifdef HAVE_CUDA
-        fprintf(fp_help,"   - cuda-mem-frac FLOAT      Fraction of free GPU memory to allocate [0.9 (0.7 for tegra)]\n");
-        fprintf(fp_help,"   --cuda-block-size\n");
+        PRINTTOSTREAM(fp_help,"   - cuda-mem-frac FLOAT      Fraction of free GPU memory to allocate [0.9 (0.7 for tegra)]\n");
+        PRINTTOSTREAM(fp_help,"   --cuda-block-size\n");
 #endif
         if(fp_help == stdout){
             exit(EXIT_SUCCESS);
@@ -347,14 +347,14 @@ int meth_main(int argc, char* argv[], int8_t mode) {
 
     //print the header
     if(mode==0){
-        fprintf(stdout, "chromosome\tstart\tend\tread_name\t"
+        STDOUT("%s", "chromosome\tstart\tend\tread_name\t"
                                  "log_lik_ratio\tlog_lik_methylated\tlog_lik_unmethylated\t"
                                  "num_calling_strands\tnum_cpgs\tsequence\n");
     }
     else if(mode==1){
         if(core->event_summary_fp!=NULL){
-            fprintf(core->event_summary_fp,"read_index\tread_name\tfast5_path\tmodel_name\tstrand\tnum_events\t");
-            fprintf(core->event_summary_fp,"num_steps\tnum_skips\tnum_stays\ttotal_duration\tshift\tscale\tdrift\tvar\n");
+            PRINTTOSTREAM(core->event_summary_fp, "%s", "read_index\tread_name\tfast5_path\tmodel_name\tstrand\tnum_events\t");
+            PRINTTOSTREAM(core->event_summary_fp, "%s", "num_steps\tnum_skips\tnum_stays\ttotal_duration\tshift\tscale\tdrift\tvar\n");
         }
         emit_event_alignment_tsv_header(stdout, 1, 0);
     }
@@ -412,7 +412,7 @@ int meth_main(int argc, char* argv[], int8_t mode) {
         db_t* db = init_db(core);
         status = load_db(core, db);
 
-        fprintf(stderr, "[%s::%.3f*%.2f] %d Entries (%.1fM bases) loaded\n", __func__,
+        INFO("[%s::%.3f*%.2f] %d Entries (%.1fM bases) loaded\n", __func__,
                 realtime() - realtime0, cputime() / (realtime() - realtime0),
                 status.num_reads,status.num_bases/(1000.0*1000.0));
 
@@ -420,7 +420,7 @@ int meth_main(int argc, char* argv[], int8_t mode) {
             int ret = pthread_join(tid_p, NULL);
             NEG_CHK(ret);
             if(opt.verbosity>1){
-                fprintf(stderr, "[%s::%.3f*%.2f] Joined to processor thread %ld\n", __func__,
+                INFO("[%s::%.3f*%.2f] Joined to processor thread %ld\n", __func__,
                 realtime() - realtime0, cputime() / (realtime() - realtime0),
                 tid_p);
             }
@@ -440,7 +440,7 @@ int meth_main(int argc, char* argv[], int8_t mode) {
                                 (void*)(pt_arg));
         NEG_CHK(ret);
         if(opt.verbosity>1){
-            fprintf(stderr, "[%s::%.3f*%.2f] Spawned processor thread %ld\n", __func__,
+            INFO("[%s::%.3f*%.2f] Spawned processor thread %ld\n", __func__,
                 realtime() - realtime0, cputime() / (realtime() - realtime0),
                 tid_p);
         }
@@ -449,7 +449,7 @@ int meth_main(int argc, char* argv[], int8_t mode) {
             int ret = pthread_join(tid_pp, NULL);
             NEG_CHK(ret);
             if(opt.verbosity>1){
-                fprintf(stderr, "[%s::%.3f*%.2f] Joined to post-processor thread %ld\n", __func__,
+                INFO("[%s::%.3f*%.2f] Joined to post-processor thread %ld\n", __func__,
                 realtime() - realtime0, cputime() / (realtime() - realtime0),
                 tid_pp);
             }
@@ -461,7 +461,7 @@ int meth_main(int argc, char* argv[], int8_t mode) {
                                 (void*)(pt_arg));
         NEG_CHK(ret);
         if(opt.verbosity>1){
-            fprintf(stderr, "[%s::%.3f*%.2f] Spawned post-processor thread %ld\n", __func__,
+            INFO("[%s::%.3f*%.2f] Spawned post-processor thread %ld\n", __func__,
                 realtime() - realtime0, cputime() / (realtime() - realtime0),
                 tid_pp);
         }
@@ -476,14 +476,14 @@ int meth_main(int argc, char* argv[], int8_t mode) {
     int ret = pthread_join(tid_p, NULL);
     NEG_CHK(ret);
     if(opt.verbosity>1){
-        fprintf(stderr, "[%s::%.3f*%.2f] Joined to last processor thread %ld\n", __func__,
+        INFO("[%s::%.3f*%.2f] Joined to last processor thread %ld\n", __func__,
                 realtime() - realtime0, cputime() / (realtime() - realtime0),
                 tid_p);
     }
     ret = pthread_join(tid_pp, NULL);
     NEG_CHK(ret);
     if(opt.verbosity>1){
-    fprintf(stderr, "[%s::%.3f*%.2f] Joined to last post-processor thread %ld\n", __func__,
+    INFO("[%s::%.3f*%.2f] Joined to last post-processor thread %ld\n", __func__,
                 realtime() - realtime0, cputime() / (realtime() - realtime0),
                 tid_pp);
     }
@@ -492,23 +492,23 @@ int meth_main(int argc, char* argv[], int8_t mode) {
 #endif
 
 
-    fprintf(stderr, "\n[%s] total entries: %ld, qc fail: %ld, could not calibrate: %ld, no alignment: %ld, bad fast5: %ld",
+    INFO("\n[%s] total entries: %ld, qc fail: %ld, could not calibrate: %ld, no alignment: %ld, bad fast5: %ld",
              __func__,core->total_reads, core->qc_fail_reads, core->failed_calibration_reads, core->failed_alignment_reads, core->bad_fast5_file);
-    fprintf(stderr,"\n[%s] total bases: %.1f Mbases",__func__,core->sum_bases/(float)(1000*1000));
+    INFO("\n[%s] total bases: %.1f Mbases",__func__,core->sum_bases/(float)(1000*1000));
 
-    fprintf(stderr, "\n[%s] Data loading time: %.3f sec", __func__,core->load_db_time);
-    fprintf(stderr, "\n[%s]     - bam load time: %.3f sec", __func__, core->db_bam_time);
-    fprintf(stderr, "\n[%s]     - fasta load time: %.3f sec", __func__, core->db_fasta_time);
-    fprintf(stderr, "\n[%s]     - fast5 load time: %.3f sec", __func__, core->db_fast5_time);
-    fprintf(stderr, "\n[%s]         - fast5 open time: %.3f sec", __func__, core->db_fast5_open_time);
-    fprintf(stderr, "\n[%s]         - fast5 read time: %.3f sec", __func__, core->db_fast5_read_time);
+    INFO("\n[%s] Data loading time: %.3f sec", __func__,core->load_db_time);
+    INFO("\n[%s]     - bam load time: %.3f sec", __func__, core->db_bam_time);
+    INFO("\n[%s]     - fasta load time: %.3f sec", __func__, core->db_fasta_time);
+    INFO("\n[%s]     - fast5 load time: %.3f sec", __func__, core->db_fast5_time);
+    INFO("\n[%s]         - fast5 open time: %.3f sec", __func__, core->db_fast5_open_time);
+    INFO("\n[%s]         - fast5 read time: %.3f sec", __func__, core->db_fast5_read_time);
 
-    fprintf(stderr, "\n[%s] Data processing time: %.3f sec", __func__,core->process_db_time);
+    INFO("\n[%s] Data processing time: %.3f sec", __func__,core->process_db_time);
 
     if((core->opt.flag&F5C_SEC_PROF) || (!(core->opt.flag & F5C_DISABLE_CUDA))){
-        fprintf(stderr, "\n[%s]     - Events time: %.3f sec",
+        INFO("\n[%s]     - Events time: %.3f sec",
                 __func__, core->event_time);
-        fprintf(stderr, "\n[%s]     - Alignment time: %.3f sec",
+        INFO("\n[%s]     - Alignment time: %.3f sec",
                 __func__, core->align_time);
         #ifdef HAVE_CUDA
             if (!(core->opt.flag & F5C_DISABLE_CUDA)) {
@@ -535,19 +535,19 @@ int meth_main(int argc, char* argv[], int8_t mode) {
                     __func__, core->extra_load_cpu);
             }
         #endif
-        fprintf(stderr, "\n[%s]     - Estimate scaling time: %.3f sec",
+        INFO("\n[%s]     - Estimate scaling time: %.3f sec",
                 __func__, core->est_scale_time);
-        fprintf(stderr, "\n[%s]     - HMM time: %.3f sec",
+        INFO("\n[%s]     - HMM time: %.3f sec",
                 __func__, core->meth_time);
 
     }
 
-    fprintf(stderr,"\n");
+    INFO("%s", "\n");
 
     if(core->ultra_long_skipped>0){
         assert(tmpfile!=NULL);
         WARNING("%ld ultra long reads (>%.1f kbases) were skipped.",core->ultra_long_skipped,core->opt.ultra_thresh/1000.0);
-        fprintf(stderr," Please run samtools index on '%s' followed by f5c with a larger -B on the CPU.\n",tmpfile);
+        ERROR(" Please run samtools index on '%s' followed by f5c with a larger -B on the CPU.\n",tmpfile);
     }
 
 
