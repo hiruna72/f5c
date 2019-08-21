@@ -34,8 +34,8 @@ core_t* init_core(const char* bamfilename, const char* fastafile,
     // load bam index file
     core->m_bam_idx = sam_index_load(core->m_bam_fh, bamfilename);
     if(core->m_bam_idx==NULL){
-        ERROR("could not load the .bai index file for %s", bamfilename);
-        fprintf(stderr, "Please run 'samtools index %s'\n", bamfilename);
+        INFO("could not load the .bai index file for %s", bamfilename);
+        INFO("Please run 'samtools index %s'\n", bamfilename);
         exit(EXIT_FAILURE);
     }
 
@@ -267,7 +267,7 @@ static inline void handle_bad_fast5(core_t* core, db_t* db,std::string fast5_pat
 void f5write(FILE* fp, void *buf, size_t element_size, size_t num_elements){
 	size_t ret=fwrite(buf,element_size,num_elements,fp);
 	if(ret!=num_elements){
-		fprintf(stderr,"Writing error has occurred :%s\n",strerror(errno));
+		ERROR("Writing error has occurred :%s\n",strerror(errno));
 		exit(EXIT_FAILURE);
 	}
 }
@@ -275,7 +275,7 @@ void f5write(FILE* fp, void *buf, size_t element_size, size_t num_elements){
 static inline void f5read(FILE* fp, void *buf, size_t element_size, size_t num_elements){
 	size_t ret=fread(buf,element_size,num_elements,fp);
 	if(ret!=num_elements){
-		fprintf(stderr,"Reading error has occurred :%s\n",strerror(errno));
+        ERROR("Reading error has occurred :%s\n",strerror(errno));
 		exit(EXIT_FAILURE);
 	}
 }
@@ -341,13 +341,13 @@ static inline int read_from_fast5_files(core_t *core, db_t *db, std::string qnam
         core->db_fast5_time += realtime() - t;
 
         if (core->opt.flag & F5C_PRINT_RAW) {
-            printf(">%s\tPATH:%s\tLN:%llu\n", qname.c_str(), fast5_path,
+            STDOUT(">%s\tPATH:%s\tLN:%llu\n", qname.c_str(), fast5_path,
                 db->f5[i]->nsample);
             uint32_t j = 0;
             for (j = 0; j < db->f5[i]->nsample; j++) {
-                printf("%d\t", (int)db->f5[i]->rawptr[j]);
+                STDOUT("%d\t", (int)db->f5[i]->rawptr[j]);
             }
-            printf("\n");
+            STDOUT("\n");
         }
         if(core->opt.flag & F5C_WR_RAW_DUMP){
             //write the fast5 dump to the binary file pointer core->raw_dump
@@ -889,7 +889,7 @@ void process_db(core_t* core, db_t* db) {
         double event_end = realtime();
         core->event_time += (event_end-event_start);
 
-        fprintf(stderr, "[%s::%.3f*%.2f] Events computed\n", __func__,
+        INFO("[%s::%.3f*%.2f] Events computed\n", __func__,
                 realtime() - realtime0, cputime() / (realtime() - realtime0));
 
         for (i = 0; i < db->n_bam_rec; i++) {
@@ -903,7 +903,7 @@ void process_db(core_t* core, db_t* db) {
         double align_end = realtime();
         core->align_time += (align_end-align_start);
 
-        fprintf(stderr, "[%s::%.3f*%.2f] Banded alignment done\n", __func__,
+        INFO("[%s::%.3f*%.2f] Banded alignment done\n", __func__,
                 realtime() - realtime0, cputime() / (realtime() - realtime0));
 
         double est_scale_start = realtime();
@@ -911,7 +911,7 @@ void process_db(core_t* core, db_t* db) {
         double est_scale_end = realtime();
         core->est_scale_time += (est_scale_end-est_scale_start);
 
-        fprintf(stderr, "[%s::%.3f*%.2f] Scaling calibration done\n", __func__,
+        INFO("[%s::%.3f*%.2f] Scaling calibration done\n", __func__,
                 realtime() - realtime0, cputime() / (realtime() - realtime0));
 
         double meth_start = realtime();
@@ -919,7 +919,7 @@ void process_db(core_t* core, db_t* db) {
         double meth_end = realtime();
         core->meth_time += (meth_end-meth_start);
 
-        fprintf(stderr, "[%s::%.3f*%.2f] HMM done\n", __func__,
+        INFO("[%s::%.3f*%.2f] HMM done\n", __func__,
                 realtime() - realtime0, cputime() / (realtime() - realtime0));
 
 
@@ -948,16 +948,16 @@ void output_db(core_t* core, db_t* db) {
     if (core->opt.flag & F5C_PRINT_EVENTS) {
         int32_t i = 0;
         for (i = 0; i < db->n_bam_rec; i++) {
-            printf(">%s\tLN:%d\tEVENTSTART:%d\tEVENTEND:%d\n",
+            STDOUT(">%s\tLN:%d\tEVENTSTART:%d\tEVENTEND:%d\n",
                    bam_get_qname(db->bam_rec[i]), (int)db->et[i].n,
                    (int)db->et[i].start, (int)db->et[i].end);
             uint32_t j = 0;
             for (j = 0; j < db->et[i].n; j++) {
-                printf("{%d,%zu,%f,%f}\t", (int)db->et[i].event[j].start,
+                STDOUT("{%d,%zu,%f,%f}\t", (int)db->et[i].event[j].start,
                        db->et[i].event[j].length, db->et[i].event[j].mean,
                        db->et[i].event[j].stdv);
             }
-            printf("\n");
+            STDOUT("\n");
         }
     }
     if (core->opt.flag & F5C_PRINT_BANDED_ALN) {
@@ -966,28 +966,28 @@ void output_db(core_t* core, db_t* db) {
             if((db->read_stat_flag[i]) & FAILED_ALIGNMENT){
                 continue;
             }
-            printf(">%s\tN_ALGN_PAIR:%d\t{ref_os,read_pos}\n",
+            STDOUT(">%s\tN_ALGN_PAIR:%d\t{ref_os,read_pos}\n",
                    bam_get_qname(db->bam_rec[i]),
                    (int)db->n_event_align_pairs[i]);
             AlignedPair* event_align_pairs = db->event_align_pairs[i];
             int32_t j = 0;
             for (j = 0; j < db->n_event_align_pairs[i]; j++) {
-                printf("{%d,%d}\t", event_align_pairs[j].ref_pos,
+                STDOUT("{%d,%d}\t", event_align_pairs[j].ref_pos,
                        event_align_pairs[j].read_pos);
             }
-            printf("\n");
+            STDOUT("\n");
         }
     }
 
     if (core->opt.flag & F5C_PRINT_SCALING) {
         int32_t i = 0;
-        printf("read\tshift\tscale\tvar\n");
+        STDOUT("read\tshift\tscale\tvar\n");
 
         for (i = 0; i < db->n_bam_rec; i++) {
             if((db->read_stat_flag[i])&(FAILED_ALIGNMENT|FAILED_CALIBRATION)){
                 continue;
             }
-            printf("%s\t%.2lf\t%.2lf\t%.2lf\n", bam_get_qname(db->bam_rec[i]),
+            STDOUT("%s\t%.2lf\t%.2lf\t%.2lf\n", bam_get_qname(db->bam_rec[i]),
                    db->scalings[i].shift, db->scalings[i].scale,
                    db->scalings[i].var);
         }
@@ -1019,10 +1019,10 @@ void output_db(core_t* core, db_t* db) {
                     // fprintf(stderr, "%.2lf\t%.2lf\t", sum_ll_m, sum_ll_u);
                     // fprintf(stderr, "%d\t%d\t%s\n", ss.strands_scored, ss.n_cpg, ss.sequence.c_str());
 
-                    printf("%s\t%d\t%d\t", contig, ss.start_position, ss.end_position);
-                    printf("%s\t%.2lf\t", qname, diff);
-                    printf("%.2lf\t%.2lf\t", sum_ll_m, sum_ll_u);
-                    printf("%d\t%d\t%s\n", ss.strands_scored, ss.n_cpg, ss.sequence.c_str());
+                    STDOUT("%s\t%d\t%d\t", contig, ss.start_position, ss.end_position);
+                    STDOUT("%s\t%.2lf\t", qname, diff);
+                    STDOUT("%.2lf\t%.2lf\t", sum_ll_m, sum_ll_u);
+                    STDOUT("%d\t%d\t%s\n", ss.strands_scored, ss.n_cpg, ss.sequence.c_str());
 
                 }
             }
@@ -1033,10 +1033,10 @@ void output_db(core_t* core, db_t* db) {
                 scalings_t scalings = db->scalings[i];
                 if(summary_fp != NULL && summary.num_events > 0) {
                     size_t strand_idx = 0;
-                    fprintf(summary_fp, "%d\t%s\t", i, qname);
-                    fprintf(summary_fp, "%s\t%s\t%s\t",".", "dna", strand_idx == 0 ? "template" : "complement");
-                    fprintf(summary_fp, "%d\t%d\t%d\t%d\t", summary.num_events, summary.num_steps, summary.num_skips, summary.num_stays);
-                    fprintf(summary_fp, "%.2lf\t%.3lf\t%.3lf\t%.3lf\t%.3lf\n", summary.sum_duration/(db->f5[i]->sample_rate), scalings.shift, scalings.scale, 0.0, scalings.var);
+                    FILEWRITE(summary_fp, "%d\t%s\t", i, qname);
+                    FILEWRITE(summary_fp, "%s\t%s\t%s\t",".", "dna", strand_idx == 0 ? "template" : "complement");
+                    FILEWRITE(summary_fp, "%d\t%d\t%d\t%d\t", summary.num_events, summary.num_steps, summary.num_skips, summary.num_stays);
+                    FILEWRITE(summary_fp, "%.2lf\t%.3lf\t%.3lf\t%.3lf\t%.3lf\n", summary.sum_duration/(db->f5[i]->sample_rate), scalings.shift, scalings.scale, 0.0, scalings.var);
                 }
                 std::vector<event_alignment_t> *event_alignment_result = db->event_alignment_result[i];
                  emit_event_alignment_tsv(stdout,0,&(db->et[i]),core->model,db->scalings[i],*event_alignment_result, 1, 0, 0,
