@@ -127,8 +127,9 @@ core_t* init_core(const char* bamfilename, const char* fastafile,
     //eventalign related
     core->mode = mode;
     if(mode==1){
-        core->event_summary_fp = fopen("f5c_event_align.summary.txt","w");
-        F_CHK(core->event_summary_fp,"f5c_event_align.summary.txt");
+        // TODO Fix this hack !
+        core->event_summary_fp = fopen("/storage/emulated/0/f5c/f5c_event_align.summary.txt","w");
+        F_CHK(core->event_summary_fp,"/storage/emulated/0/f5c/f5c_event_align.summary.txt");
     }
 
 
