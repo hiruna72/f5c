@@ -12,16 +12,16 @@
 #define LOG_TAG "f5c-android"
 #endif
 
-#ifdef __ANDROID__ 
-#define STDOUT(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__) 
+#ifdef __ANDROID__
+#define STDOUT(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
 #define STDERR(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
-#define WARNING(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
+#define WARNING(...) __android_log_print(ANDROID_LOG_WARN, LOG_TAG, __VA_ARGS__)
 #define ERROR(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define INFO(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
 #define SUCCESS(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
-#define DEBUG(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
-#else 
-#define STDOUT(arg, ...) fprintf(stderr, "[%s] " arg "\n", __func__,__VA_ARGS__) 
+#define DEBUG(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
+#else
+#define STDOUT(arg, ...) fprintf(stderr, "[%s] " arg "\n", __func__,__VA_ARGS__)
 #define STDERR(arg, ...) fprintf(stderr, "[%s] " arg "\n", __func__,__VA_ARGS__)
 #define WARNING(arg, ...)   fprintf(stderr, "[%s::WARNING]\033[1;33m " arg "\033[0m\n", __func__,__VA_ARGS__)
 #define ERROR(arg, ...) fprintf(stderr, "[%s::ERROR]\033[1;31m " arg "\033[0m\n", __func__,__VA_ARGS__)
@@ -41,9 +41,9 @@ static inline void malloc_chk(void* ret, const char* func, const char* file,
     if (ret != NULL)
         return;
     ERROR(
-        "[%s::ERROR]\033[1;31m Failed to allocate memory : "
-        "%s.\033[0m\n[%s::DEBUG]\033[1;35m Error occured at %s:%d. Try with a small batchsize (-K) to reduce the peak memory\033[0m\n\n",
-        func, strerror(errno), func, file, line);
+            "[%s::ERROR]\033[1;31m Failed to allocate memory : "
+            "%s.\033[0m\n[%s::DEBUG]\033[1;35m Error occured at %s:%d. Try with a small batchsize (-K) to reduce the peak memory\033[0m\n\n",
+            func, strerror(errno), func, file, line);
     exit(EXIT_FAILURE);
 }
 
@@ -52,9 +52,9 @@ static inline void f_chk(void* ret, const char* func, const char* file,
     if (ret != NULL)
         return;
     ERROR(
-        "[%s::ERROR]\033[1;31m Failed to open %s : "
-        "%s.\033[0m\n[%s::DEBUG]\033[1;35m Error occured at %s:%d.\033[0m\n\n",
-        func, fopen_f, strerror(errno), func, file, line);
+            "[%s::ERROR]\033[1;31m Failed to open %s : "
+            "%s.\033[0m\n[%s::DEBUG]\033[1;35m Error occured at %s:%d.\033[0m\n\n",
+            func, fopen_f, strerror(errno), func, file, line);
     exit(EXIT_FAILURE);
 }
 
