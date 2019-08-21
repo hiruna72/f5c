@@ -21,6 +21,7 @@
 
 #include "nanopolish_read_db.h"
 #include "fast5lite.h"
+#include "error.h"
 
 // ref: http://stackoverflow.com/a/612176/717706
 // return true if the given name is a directory
@@ -92,7 +93,7 @@ void index_file_from_map(ReadDB& read_db, const std::string& fn, const std::map<
         }
     } else {
         if(opt::verbose > 0) {
-            fprintf(stderr, "Could not find read %s in sequencing summary file\n", fn.c_str());
+            ERROR("Could not find read %s in sequencing summary file", fn.c_str());
         }
     }
 } // process_file
@@ -106,7 +107,7 @@ void index_file_from_fast5(ReadDB& read_db, const std::string& fn, const std::ma
 
     hid_t hdf5_file = fast5_open(fast5_path);
     if(hdf5_file < 0) {
-        fprintf(stderr, "could not open fast5 file: %s\n", fast5_path);
+        ERROR("could not open fast5 file: %s\n", fast5_path);
     }
 
     std::string read_id = fast5_get_read_id(hdf5_file);
@@ -120,7 +121,7 @@ void index_file_from_fast5(ReadDB& read_db, const std::string& fn, const std::ma
 
 void index_path(ReadDB& read_db, const std::string& path, const std::map<std::string, std::string>& fast5_to_read_name_map)
 {
-    fprintf(stderr, "[readdb] indexing %s\n", path.c_str());
+    INFO("[readdb] indexing %s\n", path.c_str());
     if (is_directory(path)) {
         auto dir_list = list_directory(path);
         for (const auto& fn : dir_list) {
@@ -153,7 +154,7 @@ void process_summary_fofn()
     // open
     std::ifstream in_file(opt::sequencing_summary_fofn.c_str());
     if(in_file.bad()) {
-        fprintf(stderr, "error: could not file %s\n", opt::sequencing_summary_fofn.c_str());
+        ERROR("Could not file %s\n", opt::sequencing_summary_fofn.c_str());
         exit(EXIT_FAILURE);
     }
 
@@ -166,7 +167,7 @@ void process_summary_fofn()
 
 void exit_bad_header(const std::string& str, const std::string& filename)
 {
-    fprintf(stderr, "Could not find %s column in the header of %s\n", str.c_str(), filename.c_str());
+    ERROR("Could not find %s column in the header of %s\n", str.c_str(), filename.c_str());
     exit(EXIT_FAILURE);
 }
 
@@ -176,7 +177,7 @@ void parse_sequencing_summary(const std::string& filename, std::map<std::string,
     // open
     std::ifstream in_file(filename.c_str());
     if(in_file.bad()) {
-        fprintf(stderr, "error: could not file %s\n", filename.c_str());
+        ERROR("Could not file %s\n", filename.c_str());
         exit(EXIT_FAILURE);
     }
 
@@ -265,12 +266,12 @@ void parse_index_options(int argc, char** argv)
     // logger::Logger::set_levels_from_options(log_level, &std::clog);
 
     if (argc - optind < 1) {
-        std::cerr << "[f5c index]  not enough arguments\n";
+        ERROR("%s","[f5c index] not enough arguments");
         die = true;
     }
 
     if (argc - optind > 1) {
-        std::cerr << "[f5c index] too many arguments\n";
+        ERROR("%s", "[f5c index] too many arguments");
         die = true;
     }
 
@@ -281,6 +282,12 @@ void parse_index_options(int argc, char** argv)
     }
 
     opt::reads_file = argv[optind++];
+    
+    // A program that scans multiple argument vectors, or rescans the same vector more than once,
+    // and wants to make use of GNU extensions such as '+' and '-' at the start of optstring,
+    // or changes the value of POSIXLY_CORRECT between scans, must reinitialize getopt() by resetting optind to 1
+    // Doc https://linux.die.net/man/3/optind
+    optind = 1;
 }
 
 int index_main(int argc, char** argv)
@@ -293,7 +300,7 @@ int index_main(int argc, char** argv)
     std::map<std::string, std::string> fast5_to_read_name_map;
     for(const auto& ss_filename : opt::sequencing_summary_files) {
         if(opt::verbose > 2) {
-            fprintf(stderr, "summary: %s\n", ss_filename.c_str());
+            INFO("summary: %s\n", ss_filename.c_str());
         }
         parse_sequencing_summary(ss_filename, fast5_to_read_name_map);
     }
@@ -314,7 +321,7 @@ int index_main(int argc, char** argv)
 
     size_t num_with_path = read_db.get_num_reads_with_path();
     if(num_with_path == 0) {
-        fprintf(stderr, "Error: no fast5 files found\n");
+        ERROR("%s", "Error: no fast5 files found");
         exit(EXIT_FAILURE);
     } else {
         read_db.print_stats();

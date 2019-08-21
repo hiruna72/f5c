@@ -328,5 +328,12 @@ int freq_main(int argc, char **argv) {
     fclose(input);
     kh_destroy(str, sites);
     free(sorted_keys);
+
+    // A program that scans multiple argument vectors, or rescans the same vector more than once,
+    // and wants to make use of GNU extensions such as '+' and '-' at the start of optstring,
+    // or changes the value of POSIXLY_CORRECT between scans, must reinitialize getopt_long() by resetting optind to 1
+    // Doc https://linux.die.net/man/3/optind
+    optind = 1;
+
     return 0;
 }
