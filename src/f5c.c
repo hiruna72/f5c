@@ -1034,10 +1034,10 @@ void output_db(core_t* core, db_t* db) {
                 scalings_t scalings = db->scalings[i];
                 if(summary_fp != NULL && summary.num_events > 0) {
                     size_t strand_idx = 0;
-                    FILEWRITE(summary_fp, "%d\t%s\t", i, qname);
-                    FILEWRITE(summary_fp, "%s\t%s\t%s\t",".", "dna", strand_idx == 0 ? "template" : "complement");
-                    FILEWRITE(summary_fp, "%d\t%d\t%d\t%d\t", summary.num_events, summary.num_steps, summary.num_skips, summary.num_stays);
-                    FILEWRITE(summary_fp, "%.2lf\t%.3lf\t%.3lf\t%.3lf\t%.3lf\n", summary.sum_duration/(db->f5[i]->sample_rate), scalings.shift, scalings.scale, 0.0, scalings.var);
+                    PRINTTOSTREAM(summary_fp, "%d\t%s\t", i, qname);
+                    PRINTTOSTREAM(summary_fp, "%s\t%s\t%s\t", ".", "dna", strand_idx == 0 ? "template" : "complement");
+                    PRINTTOSTREAM(summary_fp, "%d\t%d\t%d\t%d\t", summary.num_events, summary.num_steps, summary.num_skips, summary.num_stays);
+                    PRINTTOSTREAM(summary_fp, "%.2lf\t%.3lf\t%.3lf\t%.3lf\t%.3lf\n", summary.sum_duration / (db->f5[i]->sample_rate), scalings.shift, scalings.scale, 0.0, scalings.var);
                 }
                 std::vector<event_alignment_t> *event_alignment_result = db->event_alignment_result[i];
                  emit_event_alignment_tsv(stdout,0,&(db->et[i]),core->model,db->scalings[i],*event_alignment_result, 1, 0, 0,
