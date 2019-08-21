@@ -33,7 +33,7 @@ void sig_handler(int sig) {
     backtrace_symbols_fd(&array[2], size - 1, STDERR_FILENO);
     fprintf(stderr, "\033[0m\n");
 #else
-    ANDROIDLOGE("I regret to inform that a segmentation fault occurred. But at least "
+    ERROR("I regret to inform that a segmentation fault occurred. But at least "
           "it is better than a wrong answer%s",
           ".");
 #endif
@@ -45,13 +45,13 @@ int index_main(int argc, char** argv);
 int freq_main(int argc, char **argv);
 
 int print_usage(){
-
-    ANDROIDLOGI("Usage: f5c <command> [options]");
-    ANDROIDLOGI("command:");
-    ANDROIDLOGI("         index               Build an index mapping from basecalled reads to the signals measured by the sequencer (same as nanopolish index)");
-    ANDROIDLOGI("         call-methylation    Classify nucleotides as methylated or not (optimised nanopolish call-methylation)");
-    ANDROIDLOGI("         meth-freq           Calculate methylation frequency at genomic CpG sites (optimised nanopolish calculate_methylation_frequency.py)");
-    ANDROIDLOGI("         eventalign          Align nanopore events to reference k-mers (optimised nanopolish eventalign)");
+    INFO("working LOG_INFO %s number is %d","string",100);
+    INFO("%s","Usage: f5c <command> [options]\n\n");
+    INFO("%s","command:\n");
+    INFO("%s","         index               Build an index mapping from basecalled reads to the signals measured by the sequencer (same as nanopolish index)\n");
+    INFO("%s","         call-methylation    Classify nucleotides as methylated or not (optimised nanopolish call-methylation)\n");
+    INFO("%s","         meth-freq           Calculate methylation frequency at genomic CpG sites (optimised nanopolish calculate_methylation_frequency.py)\n");
+    INFO("%s","         eventalign          Align nanopore events to reference k-mers (optimised nanopolish eventalign)\n\n");
 
 
     exit(EXIT_FAILURE);
@@ -81,16 +81,16 @@ int init(int argc, char* argv[]){
         ret=freq_main(argc-1, argv+1);
     }
     else{
-        ANDROIDLOGE("[f5c] Unrecognised command %s", argv[1]);
+        ERROR("[f5c] Unrecognised command %s\n",argv[1]);
         print_usage();
     }
 
-    fprintf(stderr, "\n[%s] CMD:", __func__);
+    INFO("\n[%s] CMD:", __func__);
     for (int i = 0; i < argc; ++i) {
-        fprintf(stderr, " %s", argv[i]);
+        INFO(" %s", argv[i]);
     }
 
-    ANDROIDLOGI("[%s] Real time: %.3f sec; CPU time: %.3f sec; Peak RAM: %.3f GB",
+    INFO("[%s] Real time: %.3f sec; CPU time: %.3f sec; Peak RAM: %.3f GB\n\n",
             __func__, realtime() - realtime0, cputime(),peakrss() / 1024.0 / 1024.0 / 1024.0);
 
     return ret;
