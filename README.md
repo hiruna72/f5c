@@ -42,6 +42,31 @@ Building from the Github repository additionally requires `autoreconf` which can
 Other building options are detailed [here](https://hasindu2008.github.io/f5c/docs/building).
 Instruction to build a docker image is detailed [here](https://hasindu2008.github.io/f5c/docs/docker).
 
+## Building using CMake
+
+#### Step 1: Clone the original [f5c library](https://github.com/hasindu2008/f5c) and build it in the desired android device.
+**Note**: You may need to install [termux](https://play.google.com/store/apps/details?id=com.termux&hl=en) to use as a terminal
+```
+git clone https://github.com/hasindug/f5c
+cd f5c
+make
+```
+You can find more information about building options from this [doc](https://github.com/hasindu2008/f5c/tree/master#building)
+
+#### Step 2: Copy the generated libraries(libhdf5.a & libhts.a) to a directory inside the `3rdparty` folder in your work computer
+```
+cp build/lib/libhdf5.a 3rdparty/arm64-v8a/
+cp build/lib/libhts.a 3rdparty/arm64-v8a/
+```
+#### Step 3: Cross compile using CNake and Ninja
+Create a binary folder and run the cmake command. Make sure you have installed [Ninja](https://ninja-build.org)
+```
+mkdir build-android
+cd build-android
+cmake .. -G Ninja -DCMAKE_TOOLCHAIN_FILE:STRING={Android_Sdk_home}/ndk-bundle/build/cmake/android.toolchain.cmake -DANDROID_PLATFORM=android-24 -DDEPLOY_PLATFORM:STRING="arm64-v8a" -DANDROID_ABI="arm64-v8a"
+```
+You may need to change `DEPLOY_PLATFORM` and `ANDROID_ABI` depending on the platform. Please have a look at the [cmake toolchain](https://developer.android.com/ndk/guides/cmake#variables)
+
 ### NVIDIA CUDA support
 
 To build for the GPU, you need to have the CUDA toolkit installed. Make nvcc (NVIDIA C Compiler) is in your PATH.  
