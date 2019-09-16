@@ -57,6 +57,7 @@ int print_usage(){
     exit(EXIT_FAILURE);
 }
 
+FILE* OUTPUT_FILE_POINTER;
 
 int init(int argc, char* argv[]){
 

@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include "logsum.h"
 
+
 /* Input/processing/output interleave framework :
 unless IO_PROC_NO_INTERLEAVE is set input, processing and output are interleaved
 main thread
@@ -80,6 +81,7 @@ static struct option long_options[] = {
     {"ultra-thresh",required_argument, 0, 0},      //27 the threadshold for skipping ultra long reads
     {"write-dump",required_argument, 0, 0},        //28 write the raw data as a dump
     {"read-dump",required_argument, 0, 0},         //29 read the raw data as a dump
+    {"output",required_argument, 0, 'o'},          //30 output to a file [stdout]
     {0, 0, 0, 0}};
 
 
@@ -180,6 +182,8 @@ void* pthread_post_processor(void* voidargs){
     pthread_exit(0);
 }
 
+extern FILE* OUTPUT_FILE_POINTER;
+
 //todo : need to print error message and arg check with respect to eventalign
 int meth_main(int argc, char* argv[], int8_t mode) {
 
@@ -187,7 +191,7 @@ int meth_main(int argc, char* argv[], int8_t mode) {
 
     //signal(SIGSEGV, sig_handler);
 
-    const char* optstring = "r:b:g:t:B:K:v:hV";
+    const char* optstring = "r:b:g:t:B:K:v:o:hV";
     int longindex = 0;
     int32_t c = -1;
 
@@ -288,7 +292,14 @@ int meth_main(int argc, char* argv[], int8_t mode) {
             yes_or_no(&opt, F5C_WR_RAW_DUMP, longindex, optarg, 1);
         } else if(c == 0 && longindex == 29){ //read the raw dump of the fast5 files
             yes_or_no(&opt, F5C_RD_RAW_DUMP, longindex, optarg, 1);
-        }        
+        } else if(c=='o'){
+            char* OUTPUT_FILE_PATH = optarg;
+            OUTPUT_FILE_POINTER = fopen(OUTPUT_FILE_PATH, "a");
+            if(OUTPUT_FILE_POINTER == NULL) {
+                ERROR("Could not open output file path %s", OUTPUT_FILE_PATH);
+                exit(1);
+            }
+        }
     }
 
     if (fastqfile == NULL || bamfilename == NULL || fastafile == NULL || fp_help == stdout) {
@@ -304,6 +315,7 @@ int meth_main(int argc, char* argv[], int8_t mode) {
         PRINTTOSTREAM(fp_help, "%s","   -h                         help\n");
         PRINTTOSTREAM(fp_help, "%s","   --min-mapq INT             minimum mapping quality [%d]\n",opt.min_mapq);
         PRINTTOSTREAM(fp_help, "%s","   --secondary=yes|no         consider secondary mappings or not [%s]\n",(opt.flag&F5C_SECONDARY_YES)?"yes":"no");
+        PRINTTOSTREAM(fp_help, "%s","   -o FILE                    output to file [stdout]\n");
         PRINTTOSTREAM(fp_help, "%s","   --skip-unreadable=yes|no   skip any unreadable fast5 or terminate program [%s]\n",(opt.flag&F5C_SKIP_UNREADABLE?"yes":"no"));
         PRINTTOSTREAM(fp_help, "%s","   --verbose INT              verbosity level [%d]\n",opt.verbosity);
         PRINTTOSTREAM(fp_help, "%s","   --version                  print version\n");
@@ -347,9 +359,9 @@ int meth_main(int argc, char* argv[], int8_t mode) {
 
     //print the header
     if(mode==0){
-        STDOUT("%s", "chromosome\tstart\tend\tread_name\t"
-                                 "log_lik_ratio\tlog_lik_methylated\tlog_lik_unmethylated\t"
-                                 "num_calling_strands\tnum_cpgs\tsequence\n");
+        PRINTTOSTREAM(OUTPUT_FILE_POINTER,"%s", "chromosome\tstart\tend\tread_name\t"
+                                                "log_lik_ratio\tlog_lik_methylated\tlog_lik_unmethylated\t"
+                                                "num_calling_strands\tnum_cpgs\tsequence\n");
     }
     else if(mode==1){
         if(core->event_summary_fp!=NULL){
