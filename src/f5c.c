@@ -22,6 +22,8 @@ Error counter for consecutive failures in the skip unreadable mode
 not all the memory allocations are needed for eventalign mode
 */
 
+extern char* OUTPUT_FILE_PATH;
+
 core_t* init_core(const char* bamfilename, const char* fastafile,
                   const char* fastqfile, const char* tmpfile, opt_t opt,double realtime0, int8_t mode) {
     core_t* core = (core_t*)malloc(sizeof(core_t));
@@ -128,8 +130,11 @@ core_t* init_core(const char* bamfilename, const char* fastafile,
     core->mode = mode;
     if(mode==1){
         // TODO Fix this hack !
-        core->event_summary_fp = fopen("/storage/emulated/0/f5c/f5c_event_align.summary.txt","w");
-        F_CHK(core->event_summary_fp,"/storage/emulated/0/f5c/f5c_event_align.summary.txt");
+        if(OUTPUT_FILE_PATH == NULL){
+            OUTPUT_FILE_PATH = "f5c_event_alignment.summary.txt";
+        }
+        core->event_summary_fp = fopen(OUTPUT_FILE_PATH,"w");
+        F_CHK(core->event_summary_fp,OUTPUT_FILE_PATH);
     }
 
 
@@ -1057,6 +1062,8 @@ void output_db(core_t* core, db_t* db) {
             }
         }
     }
+
+    fflush(OUTPUT_FILE_POINTER);
 
 }
 

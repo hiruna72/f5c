@@ -182,6 +182,7 @@ void* pthread_post_processor(void* voidargs){
     pthread_exit(0);
 }
 
+extern char* OUTPUT_FILE_PATH;
 extern FILE* OUTPUT_FILE_POINTER;
 
 //todo : need to print error message and arg check with respect to eventalign
@@ -293,11 +294,13 @@ int meth_main(int argc, char* argv[], int8_t mode) {
         } else if(c == 0 && longindex == 29){ //read the raw dump of the fast5 files
             yes_or_no(&opt, F5C_RD_RAW_DUMP, longindex, optarg, 1);
         } else if(c=='o'){
-            char* OUTPUT_FILE_PATH = optarg;
-            OUTPUT_FILE_POINTER = fopen(OUTPUT_FILE_PATH, "a");
-            if(OUTPUT_FILE_POINTER == NULL) {
-                ERROR("Could not open output file path %s", OUTPUT_FILE_PATH);
-                exit(1);
+            OUTPUT_FILE_PATH = optarg;
+            if(mode == 0){
+                OUTPUT_FILE_POINTER = fopen(OUTPUT_FILE_PATH, "a");
+                if(OUTPUT_FILE_POINTER == NULL) {
+                    ERROR("Could not open output file path %s", OUTPUT_FILE_PATH);
+                    exit(1);
+                }
             }
         }
     }

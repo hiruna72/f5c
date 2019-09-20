@@ -58,6 +58,7 @@ int print_usage(){
 }
 
 FILE* OUTPUT_FILE_POINTER;
+char* OUTPUT_FILE_PATH;
 
 int init(int argc, char* argv[]){
 
