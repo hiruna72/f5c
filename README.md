@@ -58,7 +58,7 @@ You can find more information about building options from this [doc](https://git
 cp build/lib/libhdf5.a 3rdparty/arm64-v8a/
 cp build/lib/libhts.a 3rdparty/arm64-v8a/
 ```
-#### Step 3: Cross compile using CNake and Ninja
+#### Step 3: Cross compile using CMake and Ninja
 Create a binary folder and run the cmake command. Make sure you have installed [Ninja](https://ninja-build.org)
 ```
 mkdir build-android
