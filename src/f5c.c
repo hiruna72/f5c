@@ -22,6 +22,8 @@ Error counter for consecutive failures in the skip unreadable mode
 not all the memory allocations are needed for eventalign mode
 */
 
+extern char* OUTPUT_FILE_PATH;
+
 core_t* init_core(const char* bamfilename, const char* fastafile,
                   const char* fastqfile, const char* tmpfile, opt_t opt,double realtime0, int8_t mode) {
     core_t* core = (core_t*)malloc(sizeof(core_t));
@@ -128,8 +130,11 @@ core_t* init_core(const char* bamfilename, const char* fastafile,
     core->mode = mode;
     if(mode==1){
         // TODO Fix this hack !
-        core->event_summary_fp = fopen("/storage/emulated/0/f5c/f5c_event_align.summary.txt","w");
-        F_CHK(core->event_summary_fp,"/storage/emulated/0/f5c/f5c_event_align.summary.txt");
+        if(OUTPUT_FILE_PATH == NULL){
+            OUTPUT_FILE_PATH = "f5c_event_alignment.summary.txt";
+        }
+        core->event_summary_fp = fopen(OUTPUT_FILE_PATH,"w");
+        F_CHK(core->event_summary_fp,OUTPUT_FILE_PATH);
     }
 
 
@@ -348,7 +353,7 @@ static inline int read_from_fast5_files(core_t *core, db_t *db, std::string qnam
             for (j = 0; j < db->f5[i]->nsample; j++) {
                 STDOUT("%d\t", (int)db->f5[i]->rawptr[j]);
             }
-            STDOUT("\n");
+            STDOUT("%s", "\n");
         }
         if(core->opt.flag & F5C_WR_RAW_DUMP){
             //write the fast5 dump to the binary file pointer core->raw_dump
@@ -945,6 +950,8 @@ void process_db(core_t* core, db_t* db) {
     return;
 }
 
+extern FILE* OUTPUT_FILE_POINTER;
+
 void output_db(core_t* core, db_t* db) {
     if (core->opt.flag & F5C_PRINT_EVENTS) {
         int32_t i = 0;
@@ -958,7 +965,7 @@ void output_db(core_t* core, db_t* db) {
                        db->et[i].event[j].length, db->et[i].event[j].mean,
                        db->et[i].event[j].stdv);
             }
-            STDOUT("\n");
+            STDOUT("%s", "\n");
         }
     }
     if (core->opt.flag & F5C_PRINT_BANDED_ALN) {
@@ -976,13 +983,13 @@ void output_db(core_t* core, db_t* db) {
                 STDOUT("{%d,%d}\t", event_align_pairs[j].ref_pos,
                        event_align_pairs[j].read_pos);
             }
-            STDOUT("\n");
+            STDOUT("%s", "\n");
         }
     }
 
     if (core->opt.flag & F5C_PRINT_SCALING) {
         int32_t i = 0;
-        STDOUT("read\tshift\tscale\tvar\n");
+        STDOUT("%s", "read\tshift\tscale\tvar\n");
 
         for (i = 0; i < db->n_bam_rec; i++) {
             if((db->read_stat_flag[i])&(FAILED_ALIGNMENT|FAILED_CALIBRATION)){
@@ -1020,11 +1027,7 @@ void output_db(core_t* core, db_t* db) {
                     // fprintf(stderr, "%.2lf\t%.2lf\t", sum_ll_m, sum_ll_u);
                     // fprintf(stderr, "%d\t%d\t%s\n", ss.strands_scored, ss.n_cpg, ss.sequence.c_str());
 
-                    STDOUT("%s\t%d\t%d\t", contig, ss.start_position, ss.end_position);
-                    STDOUT("%s\t%.2lf\t", qname, diff);
-                    STDOUT("%.2lf\t%.2lf\t", sum_ll_m, sum_ll_u);
-                    STDOUT("%d\t%d\t%s\n", ss.strands_scored, ss.n_cpg, ss.sequence.c_str());
-
+                    PRINTTOSTREAM(OUTPUT_FILE_POINTER,"%s\t%d\t%d\t%s\t%.2lf\t%.2lf\t%.2lf\t%d\t%d\t%s\n", contig, ss.start_position, ss.end_position, qname, diff, sum_ll_m, sum_ll_u, ss.strands_scored, ss.n_cpg, ss.sequence.c_str());
                 }
             }
 
@@ -1059,6 +1062,8 @@ void output_db(core_t* core, db_t* db) {
             }
         }
     }
+
+    fflush(OUTPUT_FILE_POINTER);
 
 }
 

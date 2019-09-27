@@ -41,6 +41,8 @@ set(HDF5_MAJOR_MINOR 1.10)
 # add_custom_target(htslib ALL
 #     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/htslib-${HTS_VERSION}
 # 	  COMMAND make clean
+#	  COMMAND autoheader
+#	  COMMAND autoconf
 #     COMMAND ./configure --prefix=`pwd`/../ --enable-bz2=no --enable-lzma=no --with-libdeflate=no --enable-libcurl=no  --enable-gcs=no --enable-s3=no CFLAGS=-fPIC CXXFLAGS=-fPIC
 #     COMMAND make -j4
 #     COMMAND make install
@@ -62,4 +64,4 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -rdynamic -Wall -O2 -std=c++11 ")
 
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/src)
-# add_subdirectory(${CMAKE_SOURCE_DIR}/examples)
+add_subdirectory(${CMAKE_SOURCE_DIR}/examples)

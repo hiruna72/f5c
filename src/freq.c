@@ -13,6 +13,7 @@
 #include <string.h>
 #include <getopt.h>
 #include "khash.h"
+#include "error.h"
 
 #define KEY_SIZE 3
 #define TSV_HEADER_LENGTH 160
@@ -27,6 +28,7 @@ static const char usage[] = "Usage: %s [options...]\n"
                             "\n"
                             "  -c [float]        Call threshold. Default is 2.5.\n"
                             "  -i [file]         Input file. Read from stdin if not specified.\n"
+                            "  -o [file]         Output file. Write to stdout if not specified.\n"
                             "  -s                Split groups\n";
 
 struct site_stats {
@@ -193,6 +195,8 @@ struct tsv_record* get_tsv_line(FILE* fp) {
     return record;
 }
 
+extern FILE* OUTPUT_FILE_POINTER;
+
 int freq_main(int argc, char **argv) {
     FILE* input = stdin;
     double call_threshold = 2.5;
@@ -203,7 +207,7 @@ int freq_main(int argc, char **argv) {
     //extern char* optarg;
     //extern int optind, optopt;
 
-    while ((c = getopt(argc, argv, "c:i:s")) != -1) {
+    while ((c = getopt(argc, argv, "c:i:o:s")) != -1) {
         switch(c) {
             case 'c':
                 /* TODO handle overflow when calling strtod */
@@ -229,6 +233,15 @@ int freq_main(int argc, char **argv) {
                       fprintf(stderr, "Unrecognized option: -%c\n", optopt);
                       fprintf(stderr, usage, argv[0]);
                       exit(EXIT_FAILURE);
+            case 'o':
+                if (strcmp(optarg, "-") != 0) {
+                    char* OUTPUT_FILE_PATH = optarg;
+                    OUTPUT_FILE_POINTER = fopen(OUTPUT_FILE_PATH, "a");
+                    if(OUTPUT_FILE_POINTER == NULL) {
+                        ERROR("Could not open output file path %s", OUTPUT_FILE_PATH);
+                        exit(1);
+                    }
+                }
             default:
                       break;
         }

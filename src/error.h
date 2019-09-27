@@ -2,19 +2,17 @@
 #define ERROR_H
 
 #include <errno.h>
+#include <stdio.h>
 
 #define WARN "[%s::WARNING]\033[1;33m "
 #define ERR "[%s::ERROR]\033[1;31m "
 #define CEND "\033[0m\n"
 
-#if __ANDROID__
+#ifdef __ANDROID__
 #include<android/log.h>
 #define LOG_TAG "f5c-android"
-#endif
-
-#ifdef __ANDROID__
-#define PRINTTOSTREAM(file, arg, ...) fprintf(file, "[%s] " arg "\n", __func__,__VA_ARGS__)
-#define STDOUT(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
+#define PRINTTOSTREAM(file, arg, ...) fprintf(file, arg,__VA_ARGS__)          // since in the original f5c everything written to stdout is piped to a file/next program
+#define STDOUT(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__,__func__)
 #define STDERR(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
 #define WARNING(...) __android_log_print(ANDROID_LOG_WARN, LOG_TAG, __VA_ARGS__)
 #define ERROR(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
@@ -22,7 +20,7 @@
 #define SUCCESS(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
 #define DEBUG(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
 #else
-#define PRINTTOSTREAM(file, arg, ...) fprintf(file, "[%s] " arg "\n", __func__,__VA_ARGS__)
+#define PRINTTOSTREAM(file, arg, ...) fprintf(file, arg,__VA_ARGS__)
 #define STDOUT(arg, ...) fprintf(stdout, "[%s] " arg "\n", __func__,__VA_ARGS__)
 #define STDERR(arg, ...) fprintf(stderr, "[%s] " arg "\n", __func__,__VA_ARGS__)
 #define WARNING(arg, ...)   fprintf(stderr, "[%s::WARNING]\033[1;33m " arg "\033[0m\n", __func__,__VA_ARGS__)
