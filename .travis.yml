@@ -1,6 +1,10 @@
 language: cpp
 compiler: g++
-
+matrix:
+  include:
+   - arch: amd64
+   - arch: arm64
+   
 env:
   - CUDA_HOME=/usr/local/cuda PATH=${CUDA_HOME}/bin:${PATH}
 
