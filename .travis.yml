@@ -3,7 +3,6 @@ compiler: g++
 
 matrix:
   include:
-   - arch: amd64
    - arch: arm64
    
 env:
