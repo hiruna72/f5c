@@ -1,10 +1,7 @@
 language: cpp
 compiler: g++
 
-matrix:
-  include:
-   - arch: arm64
-   
+  
 env:
   - CUDA_HOME=/usr/local/cuda PATH=${CUDA_HOME}/bin:${PATH}
 
@@ -14,6 +11,9 @@ jobs:
       packages:
         - zlib1g-dev
   include:
+    - name: "arm64 build"
+      arch: arm64
+      script: autoreconf && ./scripts/install-hdf5.sh 2> /dev/null &&./scripts/install-hts.sh && ./configure --enable-localhdf5 && make && make test
     - name: "Ubuntu 14 local hts"
       dist: trusty
       addons:
