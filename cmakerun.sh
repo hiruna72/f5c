@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # for armeabi-v7a and arm64-v8a cross compiling
-toolchain_file="/media/shan/OS/Hiruna/temp/android-sdk-linux/ndk-bundle/build/cmake/android.toolchain.cmake"
+toolchain_file="set path to /android-sdk-linux/ndk-bundle/build/cmake/android.toolchain.cmake"
 
 # terminate script
 die(){
