@@ -43,8 +43,15 @@ If you skip `scripts/install-hts.sh` and `./configure` hdf5 will be compiled loc
 
 Building from the Github repository additionally requires `autoreconf` which can be installed on Ubuntu using `sudo apt-get install autoconf automake`.
 
+```sh
+CMake build
+set `toolchain_file` path in the cmakerun.sh #for android cross compiling
+update 3rdparty folder if necessary # for htslib check https://github.com/hiruna72/htslib
+run cmakerun.sh
+```
 Other building options are detailed [here](https://hasindu2008.github.io/f5c/docs/building).
 Instruction to build a docker image is detailed [here](https://hasindu2008.github.io/f5c/docs/docker).
+
 
 ### NVIDIA CUDA support
 
