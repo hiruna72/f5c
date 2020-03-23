@@ -7,9 +7,6 @@
 
 #include <algorithm>
 #include "f5c.h"
-#include "f5cmisc.h"
-
-
 
 // ================================================================================
 // Segmentation Hidden Markov Model
@@ -572,17 +569,3 @@ void polya_estimate(bam1_t* record, int32_t read_length,
     strcpy(summary->qc_tag,qc_tag.c_str());
     return;
 }
-
-//void polya_estimate(bam1_t* record, int32_t read_length,
-//                    index_pair_t* base_to_event_map,
-//                    scalings_t scaling,
-//                    fast5_t* f5,
-//                    float sample_rate,
-//                    event_table* events){
-//    // the BamProcessor framework calls the input function with the
-//    // bam record, read index, etc passed as parameters
-//    // bind the other parameters the worker function needs here
-////    estimate_polya_for_single_read(record,scaling,f5,sample_rate,events,read_length,base_to_event_map);
-//    fprintf(stderr,"came ");
-//}
-

@@ -569,7 +569,6 @@ db_t* init_db(core_t* core) {
         db->polya_estimate_summary = NULL;
     }
     else if (core->mode==2){
-        fprintf(stderr,"allocating...");
         db->polya_estimate_summary = (PolyaEstimateSummary *)malloc(sizeof(PolyaEstimateSummary)* db->capacity_bam_rec);
         MALLOC_CHK(db->polya_estimate_summary);
         db->eventalign_summary = NULL;
