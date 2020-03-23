@@ -24,7 +24,6 @@ Error counter for consecutive failures in the skip unreadable mode
 not all the memory allocations are needed for eventalign mode
 */
 
-
 //make this inline for performance reasons
 void f5write(FILE* fp, void *buf, size_t element_size, size_t num_elements){
 	size_t ret=fwrite(buf,element_size,num_elements,fp);
@@ -307,7 +306,7 @@ void free_iop(core_t* core,opt_t opt){
 
 }
 
-core_t* init_core(const char* bamfilename, const char* fastafile,
+core_t* init_core(const char* bamfilename, const char* genomefile,
                   const char* fastqfile, const char* tmpfile, opt_t opt,double realtime0, int8_t mode, char *eventalignsummary) {
     core_t* core = (core_t*)malloc(sizeof(core_t));
     MALLOC_CHK(core);
@@ -374,7 +373,7 @@ core_t* init_core(const char* bamfilename, const char* fastafile,
     }    
 
     // reference file
-    core->fai = fai_load(fastafile);
+    core->fai = fai_load(genomefile);
     NULL_CHK(core->fai);
 
     // readbb
@@ -555,7 +554,7 @@ db_t* init_db(core_t* core) {
     db->ultra_long_skipped=0;
 
     //eventalign related
-    if(core->mode==1){
+    if(core->mode==1 ){
         db->eventalign_summary = (EventalignSummary *)malloc(sizeof(EventalignSummary) * db->capacity_bam_rec);
         MALLOC_CHK(db->eventalign_summary);
 
@@ -566,10 +565,20 @@ db_t* init_db(core_t* core) {
             NULL_CHK(db->event_alignment_result[i]);
             (db->eventalign_summary[i]).num_events=0; //done here in the same loop for efficiency
         }
+        db->polya_estimate_summary = NULL;
+    }
+    else if (core->mode==2){
+        fprintf(stderr,"allocating...");
+        db->polya_estimate_summary = (PolyaEstimateSummary *)malloc(sizeof(PolyaEstimateSummary)* db->capacity_bam_rec);
+        MALLOC_CHK(db->polya_estimate_summary);
+        db->eventalign_summary = NULL;
+        db->event_alignment_result = NULL;
+
     }
     else{
         db->eventalign_summary = NULL;
         db->event_alignment_result = NULL;
+        db->polya_estimate_summary = NULL;
     }
 
     return db;
@@ -1481,13 +1490,17 @@ void process_single(core_t* core, db_t* db,int32_t i) {
                   core->clip_end,  
                   &(db->et[i]), core->model,db->base_to_event_map[i],db->scalings[i],db->events_per_base[i],db->f5[i]->sample_rate);    
     }
+    else if(core->mode==2){
+        //hack
+        polya_estimate(db->bam_rec[i], db->read_len[i], db->base_to_event_map[i],db->scalings[i],db->f5[i],db->f5[i]->sample_rate,&(db->et[i]),&(db->polya_estimate_summary[i]));
+    }
 }
 
 void process_db(core_t* core, db_t* db) {
 
     double process_start = realtime();
 
-    if((core->opt.flag&F5C_SEC_PROF) || (!(core->opt.flag & F5C_DISABLE_CUDA))){
+    if((core->opt.flag & F5C_SEC_PROF) || (!(core->opt.flag & F5C_DISABLE_CUDA))){
 
         double realtime0=core->realtime0;
         int32_t i;
@@ -1670,6 +1683,13 @@ void output_db(core_t* core, db_t* db) {
                     emit_event_alignment_sam(core->sam_output , qname, core->m_hdr, db->bam_rec[i], *event_alignment_result);
                 }
             }
+            else if (core->mode==2){
+                PolyaEstimateSummary summary = db->polya_estimate_summary[i];
+                fprintf(stdout, "%s\t%s\t%zu\t%.1lf\t%.1lf\t%.1lf\t%.1lf\t%.2lf\t%.2lf\t%s\n",
+                        qname, contig, db->bam_rec[i]->core.pos,
+                        summary.leader_sample_start, summary.adapter_sample_start, summary.polya_sample_start,
+                        summary.transcr_sample_start,summary.read_rate,summary.polya_length,summary.qc_tag);
+            }
         }
         else{
             if((db->read_stat_flag[i])&FAILED_CALIBRATION){
@@ -1744,6 +1764,10 @@ void free_db(db_t* db) {
             delete db->event_alignment_result[i];
         }
         free(db->event_alignment_result);        
+    }
+    //polya related
+    if(db->polya_estimate_summary){
+        free(db->polya_estimate_summary);
     }
 
     free(db);

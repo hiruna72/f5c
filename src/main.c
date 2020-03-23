@@ -88,6 +88,9 @@ int main(int argc, char* argv[]){
     else if(strcmp(argv[1],"meth-freq")==0){
         ret=freq_main(argc-1, argv+1);
     }
+    else if(strcmp(argv[1],"polya")==0){
+        ret=meth_main(argc-1, argv+1,2);
+    }
     else if(strcmp(argv[1],"--version")==0 || strcmp(argv[1],"-V")==0){
         fprintf(stdout,"F5C %s\n",F5C_VERSION);
         exit(EXIT_SUCCESS);

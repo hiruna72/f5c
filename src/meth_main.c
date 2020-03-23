@@ -15,7 +15,7 @@ main thread
 1. allocates and loads a databatch
 2. create `pthread_processor` thread which will perform the processing
 (note that `pthread_processor` is the process-controller that will spawn user specified number of processing threads - see below)
-3. create the `pthread_post_processor` thread that will print the output and free the databatch one the `pthread_processor` is done
+3. create the `pthread_post_processor` thread that will print the output and free the databatch once the `pthread_processor` is done
 4. allocates and load another databatch
 5. wait till the previous `pthread_processor` is done and perform 2
 6. wait till the previous `pthread_post_processor` is done and perform 3
@@ -208,7 +208,7 @@ int meth_main(int argc, char* argv[], int8_t mode) {
     int32_t c = -1;
 
     char* bamfilename = NULL;
-    char* fastafile = NULL;
+    char* genomefile = NULL;
     char* fastqfile = NULL;
     char *tmpfile = NULL;
     char *eventalignsummary = NULL;
@@ -225,7 +225,7 @@ int meth_main(int argc, char* argv[], int8_t mode) {
         } else if (c == 'b') {
             bamfilename = optarg;
         } else if (c == 'g') {
-            fastafile = optarg;
+            genomefile = optarg;
         } else if (c == 'w') {
             opt.region_str = optarg;
         } else if (c == 'B') {
@@ -365,10 +365,15 @@ int meth_main(int argc, char* argv[], int8_t mode) {
         }
     }
 
-    if (fastqfile == NULL || bamfilename == NULL || fastafile == NULL || fp_help == stdout) {
+    if (fastqfile == NULL || bamfilename == NULL || genomefile == NULL || fp_help == stdout) {
+        char sub_tool [20];
+        if(mode == 0)strcpy(sub_tool,"call-methylation");
+        else if (mode == 1)strcpy(sub_tool,"eventaling");
+        else if (mode == 2)strcpy(sub_tool,"polya");
+        else strcpy(sub_tool,"sub_tool not identified"); // TODO: change this
         fprintf(
             fp_help,
-            "Usage: f5c %s [OPTIONS] -r reads.fa -b alignments.bam -g genome.fa\n",mode==1 ? "eventalign" : "call-methylation");
+            "Usage: f5c %s [OPTIONS] -r reads.fa -b alignments.bam -g genome.fa\n",sub_tool);
         fprintf(fp_help,"   -r FILE                    fastq/fasta read file\n");
         fprintf(fp_help,"   -b FILE                    sorted bam file\n");
         fprintf(fp_help,"   -g FILE                    reference genome\n");
@@ -424,7 +429,7 @@ int meth_main(int argc, char* argv[], int8_t mode) {
     }
 
     //initialise the core data structure
-    core_t* core = init_core(bamfilename, fastafile, fastqfile, tmpfile, opt,realtime0,mode,eventalignsummary);
+    core_t* core = init_core(bamfilename, genomefile, fastqfile, tmpfile, opt,realtime0,mode,eventalignsummary);
 
     #ifdef ESL_LOG_SUM
         p7_FLogsumInit();
@@ -458,6 +463,11 @@ int meth_main(int argc, char* argv[], int8_t mode) {
         else{
             emit_sam_header(core->sam_output, core->m_hdr);
         }
+    }
+    //print header for polya
+    else if(mode==2){
+        // print header line:
+        fprintf(stdout, "readname\tcontig\tposition\tleader_start\tadapter_start\tpolya_start\ttranscript_start\tread_rate\tpolya_length\tqc_tag\n");
     }
     int32_t counter=0;
 

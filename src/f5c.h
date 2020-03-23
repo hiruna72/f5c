@@ -244,6 +244,21 @@ typedef struct
     int reference_span;
 }EventalignSummary;
 
+//polya related
+// Summarize the polya for a read strand
+typedef struct
+{
+    double leader_sample_start;
+    double adapter_sample_start;
+    double polya_sample_start;
+    double polya_sample_end;
+    double transcr_sample_start;
+
+    double polya_length;
+    double read_rate;
+    char* qc_tag;
+}PolyaEstimateSummary;
+
 
 
 // a data batch (dynamic data based on the reads)
@@ -302,6 +317,8 @@ typedef struct {
     //TODO : convert this to a C array and get rid of include <vector>
     std::vector<event_alignment_t> **event_alignment_result;
 
+    //polya_estimate related
+    PolyaEstimateSummary *polya_estimate_summary;
 
 } db_t;
 
@@ -477,7 +494,7 @@ typedef struct {
 
 db_t* init_db(core_t* core);
 ret_status_t load_db(core_t* dg, db_t* db);
-core_t* init_core(const char* bamfilename, const char* fastafile,
+core_t* init_core(const char* bamfilename, const char* genomefile,
                   const char* fastqfile, const char* tmpfile, opt_t opt,double realtime0, int8_t mode, char *eventalignsummary);
 void process_db(core_t* dg, db_t* db);
 void pthread_db(core_t* core, db_t* db, void (*func)(core_t*,db_t*,int));
