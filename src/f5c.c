@@ -1,6 +1,6 @@
 /* @f5c
 **
-** f5c interface 
+** f5c interface
 ** @author: Hasindu Gamaarachchi (hasindu@unsw.edu.au)
 ** @@
 ******************************************************************************/
@@ -14,6 +14,7 @@
 
 #include "f5c.h"
 #include "f5cmisc.h"
+#include "profiles.h"
 
 #include <sys/wait.h>
 #include <unistd.h>
@@ -43,10 +44,10 @@ static inline void f5read(FILE* fp, void *buf, size_t element_size, size_t num_e
 
 static inline int read_from_fast5_files2(char *qname_str, char *fast5_path, FILE *pipefp){
 
-    //fprintf(stderr,"readname : %s\n",qname.c_str());, 
+    //fprintf(stderr,"readname : %s\n",qname.c_str());,
     std::string qname = qname_str;
     int8_t success=0;
-    
+
 
     //INFO("Opening %s",fast5_path);
     fast5_file_t fast5_file = fast5_open(fast5_path);
@@ -62,7 +63,7 @@ static inline int read_from_fast5_files2(char *qname_str, char *fast5_path, FILE
             ERROR("%s","Fast5 causes crashes with --iop");
             exit(EXIT_FAILURE);
         }
-   
+
         fast5_close(fast5_file);
         success=1;
 
@@ -73,7 +74,7 @@ static inline int read_from_fast5_files2(char *qname_str, char *fast5_path, FILE
         f5write(pipefp,&(f5->digitisation), sizeof(float), 1);
         f5write(pipefp,&(f5->offset), sizeof(float), 1);
         f5write(pipefp,&(f5->range), sizeof(float), 1);
-        f5write(pipefp,&(f5->sample_rate), sizeof(float), 1);        
+        f5write(pipefp,&(f5->sample_rate), sizeof(float), 1);
 
         ret=fflush(pipefp);
         if(ret!=0){
@@ -119,8 +120,8 @@ void iop_handler(FILE *pipefp_c2p, FILE *pipefp_p2c){
             ERROR("%s","Malformed pipe format");
             exit(EXIT_FAILURE);
         }
-        
-        int8_t read_status = 0; 
+
+        int8_t read_status = 0;
         read_status=read_from_fast5_files2(qname,fast5_path_str,pipefp_c2p);
         if(read_status!=1){
             assert(0);
@@ -162,11 +163,11 @@ void init_iop(core_t* core,opt_t opt){
         if (pipe(pipefd_p2c[i]) == -1) { //parent to child pipe
             perror("pipe");
             exit(EXIT_FAILURE);
-        } 
+        }
         if (pipe(pipefd_c2p[i]) == -1) { //child to parent pipe
             perror("pipe");
             exit(EXIT_FAILURE);
-        } 
+        }
 
         core->pids[i] = fork();
         if(core->pids[i]==-1){
@@ -223,7 +224,7 @@ void init_iop(core_t* core,opt_t opt){
             close(pipefd_c2p[i][1]); //close write end of child to parent
             close(pipefd_p2c[i][0]); //close read end of parent to child
             if(opt.verbosity>1){
-                STDERR("parent : child process with pid %d created", core->pids[i]); 
+                STDERR("parent : child process with pid %d created", core->pids[i]);
             }
 
             core->pipefd_p2c[i] = pipefd_p2c[i][1];
@@ -235,7 +236,7 @@ void init_iop(core_t* core,opt_t opt){
             core->pipefp_c2p[i] = fdopen(pipefd_c2p[i][0],"r");
             F_CHK(core->pipefp_c2p[i],"parent : pipefp child to parent");
         }
-            
+
     }
 }
 
@@ -260,7 +261,7 @@ void free_iop(core_t* core,opt_t opt){
 
     int status,w;
     for(i=0;i<opt.num_iop;i++){
-        
+
         if(core->opt.verbosity>1){
             STDERR("parent : Waiting for child with pid %d",core->pids[i]);
         }
@@ -285,9 +286,9 @@ void free_iop(core_t* core,opt_t opt){
                 }
             }
         } while (!WIFEXITED(status) && !WIFSIGNALED(status));
-    } 
-    
-    //TODO incase graceful exit fails kill the children 
+    }
+
+    //TODO incase graceful exit fails kill the children
 
     // //int i;
     // for(i=0;i<opt.num_iop;i++){
@@ -370,7 +371,7 @@ core_t* init_core(const char* bamfilename, const char* genomefile,
     if(opt.flag & F5C_RD_RAW_DUMP){
         core->raw_dump = fopen("f5c.tmp.bin","rb");
         F_CHK(core->raw_dump,"f5c.tmp.bin");
-    }    
+    }
 
     // reference file
     core->fai = fai_load(genomefile);
@@ -413,7 +414,7 @@ core_t* init_core(const char* bamfilename, const char* genomefile,
     core->event_time=0;
     core->align_time=0;
     core->est_scale_time=0;
-    core->meth_time=0;   
+    core->meth_time=0;
 
     //cuda stuff
 #ifdef HAVE_CUDA
@@ -464,7 +465,7 @@ void free_core(core_t* core,opt_t opt) {
     }
     if(core->opt.flag&F5C_WR_RAW_DUMP || core->opt.flag&F5C_RD_RAW_DUMP){
         fclose(core->raw_dump);
-    }    
+    }
 #ifdef HAVE_CUDA
     if (!(core->opt.flag & F5C_DISABLE_CUDA)) {
         free_cuda(core);
@@ -742,7 +743,7 @@ ret_status_t load_db1(core_t* core, db_t* db) { //old method
                 if(core->ultra_long_tmp!=NULL && read_length > core->opt.ultra_thresh){
                     db->ultra_long_skipped++;
                     int ret_wr=sam_write1(core->ultra_long_tmp,core->m_hdr,record);
-                    NEG_CHK(ret_wr);  
+                    NEG_CHK(ret_wr);
                     continue;
                 }
 
@@ -751,15 +752,15 @@ ret_status_t load_db1(core_t* core, db_t* db) { //old method
                     continue;
                 }
 
-                int8_t read_status = 0;    
+                int8_t read_status = 0;
                 if (core->opt.flag & F5C_RD_RAW_DUMP){
-                    t = realtime();                  
-                    read_status=read_from_fast5_dump(core, db,i);     
+                    t = realtime();
+                    read_status=read_from_fast5_dump(core, db,i);
                     double rt = realtime() - t;
                     core->db_fast5_read_time += rt;
-                    core->db_fast5_time += rt;                      
+                    core->db_fast5_time += rt;
                 }
-                else{    
+                else{
                    read_status=read_from_fast5_files(core, db, qname,fast5_path_str,i);
                 }
                 if(read_status==1){
@@ -822,7 +823,7 @@ ret_status_t load_db1(core_t* core, db_t* db) { //old method
 
 
 void *get_fast5_from_pipe(void *voidargs){
-    
+
     pthread_arg_t *args = (pthread_arg_t *)voidargs;
     core_t* core = args->core;
     db_t* db = args->db;
@@ -836,7 +837,7 @@ void *get_fast5_from_pipe(void *voidargs){
     //read from the pipe
     int i;
     for(i = starti; i < endi; i++){
-        
+
         if(core->opt.verbosity>2){
             STDERR("tid %d : %d reading from pipe",t,i);
         }
@@ -862,7 +863,7 @@ void *get_fast5_from_pipe(void *voidargs){
     if(core->opt.verbosity>1){
         STDERR("%d-%d read from pipe",starti,endi);
     }
-    
+
     pthread_exit(0);
 
 }
@@ -870,7 +871,7 @@ void *get_fast5_from_pipe(void *voidargs){
 
 
 void *request_fast5(void *voidargs){
-    
+
     pthread_arg_t *args = (pthread_arg_t *)voidargs;
     core_t* core = args->core;
     db_t* db = args->db;
@@ -884,7 +885,7 @@ void *request_fast5(void *voidargs){
     //write to pipe
     int i;
     for(i = starti; i < endi; i++){
-          
+
         std::string qname = bam_get_qname(db->bam_rec[i]);
         std::string fast5_path_str = core->readbb->get_signal_path(qname);
 
@@ -894,7 +895,7 @@ void *request_fast5(void *voidargs){
             exit(EXIT_FAILURE);
         }
         //fprintf(stderr,"%d::%s\t%s\n",i,qname.c_str(),fast5_path_str.c_str());
-        
+
 
     }
     if(core->opt.verbosity>1){
@@ -905,13 +906,13 @@ void *request_fast5(void *voidargs){
         ERROR("%s", "Flushing the pipe failed");
         exit(EXIT_FAILURE);
     }
-    
+
     pthread_exit(0);
 
 }
 
 void fetch_fast5_multi_iop(core_t* core, db_t* db){
-    
+
 
     int32_t num_io_proc = core->opt.num_iop;
     //INFO("Running with %d IO procs",num_io_proc);
@@ -967,7 +968,7 @@ void fetch_fast5_multi_iop(core_t* core, db_t* db){
         int ret = pthread_join(tids_p2c[t], NULL);
         NEG_CHK(ret);
         ret = pthread_join(tids_c2p[t], NULL);
-        NEG_CHK(ret);        
+        NEG_CHK(ret);
     }
     core->db_fast5_read_time += realtime() - rt;
     if(core->opt.verbosity>1){
@@ -1025,7 +1026,7 @@ ret_status_t load_db2(core_t* core, db_t* db) { //separately load fast5 for mult
                 if(core->ultra_long_tmp!=NULL && read_length > core->opt.ultra_thresh){
                     db->ultra_long_skipped++;
                     int ret_wr=sam_write1(core->ultra_long_tmp,core->m_hdr,record);
-                    NEG_CHK(ret_wr);  
+                    NEG_CHK(ret_wr);
                     continue;
                 }
 
@@ -1033,7 +1034,7 @@ ret_status_t load_db2(core_t* core, db_t* db) { //separately load fast5 for mult
                     handle_bad_fast5(core, db,fast5_path_str,qname);
                     continue;
                 }
-                
+
                 db->n_bam_rec++;
                 status.num_bases += read_length;
             }
@@ -1104,7 +1105,7 @@ ret_status_t load_db(core_t* core, db_t* db) {
         }
         if (core->opt.flag & F5C_RD_RAW_DUMP){
             ERROR("%s","Reading from raw dump is unsupported with --iop");
-            assert(0);                    
+            assert(0);
         }
         if(core->opt.flag & F5C_WR_RAW_DUMP){
             ERROR("%s","Writing to raw dump is unsupported with --iop");
@@ -1624,7 +1625,7 @@ void output_db(core_t* core, db_t* db) {
         if(!db->read_stat_flag[i]){
             char* qname = bam_get_qname(db->bam_rec[i]);
             char* contig = core->m_hdr->target_name[db->bam_rec[i]->core.tid];
-            
+
             if(core->mode==0) {
                 std::map<int, ScoredSite> *site_score_map = db->site_score_map[i];
                 // write all sites for this read
@@ -1724,7 +1725,7 @@ void free_db_tmp(db_t* db) {
         free(db->base_to_event_map[i]);
         delete db->site_score_map[i];
         db->site_score_map[i] = new std::map<int, ScoredSite>;
-        
+
         if(db->event_alignment_result){ //eventalign related
             delete db->event_alignment_result[i];
             db->event_alignment_result[i] = new std::vector<event_alignment_t>;
@@ -1763,7 +1764,7 @@ void free_db(db_t* db) {
         for (i = 0; i < db->capacity_bam_rec; ++i) {
             delete db->event_alignment_result[i];
         }
-        free(db->event_alignment_result);        
+        free(db->event_alignment_result);
     }
     //polya related
     if(db->polya_estimate_summary){
@@ -1800,4 +1801,67 @@ void init_opt(opt_t* opt) {
     opt->cuda_max_readlen=3.0f;
     opt->cuda_avg_events_per_kmer=2.0f; //only if CUDA_DYNAMIC_MALLOC is unset
     opt->cuda_max_avg_events_per_kmer=5.0f;
+}
+
+
+//CHANGE: function that sets the parameter values based on specified profile name or config file.
+int set_profile(char *profile, opt_t *opt){
+    //Load preset value if argument passed is the name of a machine for which there is a default profile
+    if(strcmp(profile,"nanojet") == 0){
+        set_opt_profile(opt,Nanojet);
+    }else if(strcmp(profile,"jetson") == 0){
+        set_opt_profile(opt,Jetson);
+    }else if(strcmp(profile,"xavier") == 0){
+        set_opt_profile(opt,Xavier);
+    }else{
+        //Try to read from .profile file
+        //profile name specifies a file from which to read values from.
+        FILE *fptr = fopen(profile, "r");
+        int32_t batch_size, num_thread;
+        int64_t batch_size_bases, ultra_thresh;
+        float cuda_max_readlen,cuda_avg_events_per_kmer,cuda_max_avg_events_per_kmer;
+        if(fptr == NULL){
+            fprintf(stderr,"File not found\n");
+            return 1;
+        }
+
+        //read file and set parameter values
+        int result = fscanf(fptr, "%f %f %f %d %ld %d %ld",
+        &cuda_max_readlen,&cuda_avg_events_per_kmer,&cuda_max_avg_events_per_kmer,
+        &batch_size,&batch_size_bases,&num_thread,&ultra_thresh);
+
+        fprintf(stderr,"PROFILE LOADED\nbatch_size: %d\nbatch_size_bases: %ld\nnum_thread: %d\nultra_thresh: %ld\ncuda_max_readlen: %f\ncuda_avg_events_per_kmer: %.2f\ncuda_max_avg_events_per_kmer: %.2f\n",
+        batch_size,batch_size_bases,num_thread,ultra_thresh,cuda_max_readlen,cuda_avg_events_per_kmer,cuda_max_avg_events_per_kmer);
+
+        if(result < 7){
+            fprintf(stderr,"Error reading config file.\n");
+            return 1;
+        }
+
+        set_opts(opt,batch_size,batch_size_bases,num_thread,ultra_thresh,cuda_max_readlen,
+        cuda_avg_events_per_kmer,cuda_max_avg_events_per_kmer);
+    }
+    return 0;
+}
+
+//CHANGE: helper function to set profile to a preset value.
+void set_opt_profile(opt_t *opt, parameters machine){
+    opt->cuda_max_readlen = machine.cuda_max_readlen;
+    opt->cuda_avg_events_per_kmer = machine.cuda_avg_events_per_kmer;
+    opt->cuda_max_avg_events_per_kmer = machine.cuda_max_events_per_kmer;
+    opt->batch_size = machine.batch_size;
+    opt->batch_size_bases = machine.batch_size_bases;
+    opt->num_thread = machine.num_thread;
+    opt->ultra_thresh = machine.num_thread;
+}
+
+//CHANGE: helper function to set user specified options. Pass -1 to corresponding arg if using default parameter value.
+void set_opts(opt_t *opt, int32_t batch_size, int64_t batch_size_bases, int32_t num_thread, int64_t ultra_thresh, float cuda_max_readlen, float cuda_avg_events_per_kmer, float cuda_max_avg_events_per_kmer){
+    if( batch_size != -1) opt->batch_size = batch_size;
+    if( batch_size_bases != -1) opt->batch_size_bases = batch_size_bases;
+    if( num_thread != -1) opt->num_thread = num_thread;
+    if( ultra_thresh != -1) opt->ultra_thresh = ultra_thresh;
+    if( cuda_max_readlen != -1) opt->cuda_max_readlen = cuda_max_readlen;
+    if( cuda_avg_events_per_kmer != -1) opt->cuda_avg_events_per_kmer = cuda_avg_events_per_kmer;
+    if( cuda_max_avg_events_per_kmer != -1) opt->cuda_max_avg_events_per_kmer = cuda_max_avg_events_per_kmer;
 }
