@@ -72,3 +72,9 @@ autom4te.cache
 src/config.h
 test/ecoli_2kb_region/reads.fasta.index.readdb
 /profile.nvprof
+
+
+#CMake build related stuff
+CMakeLists.txt
+src/CMakeLists.txt
+3rdparty
