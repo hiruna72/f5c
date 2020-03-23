@@ -71,7 +71,6 @@ void realign_read(std::vector<event_alignment_t>* event_alignment_result, Eventa
 void polya_estimate(bam1_t* record, int32_t read_length,index_pair_t* base_to_event_map,
                                     scalings_t scaling,fast5_t* f5,float sample_rate,event_table* events,PolyaEstimateSummary *summary);
 
-void polya_estimate_small(int number);
 
 //basically the functions in nanopolish_profile_hmm_r9.*
 float profile_hmm_score_r9(const char *m_seq,
