@@ -78,7 +78,14 @@ Usage: meth-freq [options...]
   -o [file]         Output file. Write to stdout if not specified.
   -s                Split groups
   ```
+### Merge calculated methylation frequency files
+```
+Usage: freq-merge [options...]
 
+  -o [file]         Output file. Write to stdout if not specified.
+  -n [int]          Number of input files.
+  -f [file]         This follows n number of input files.
+  ```
 
 ### Aligning events
 
